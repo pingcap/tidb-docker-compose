@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   pd1:
-    image: pingcap/pd
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -19,7 +19,7 @@ services:
     restart: on-failure
 
   pd2:
-    image: pingcap/pd
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -36,7 +36,7 @@ services:
     restart: on-failure
 
   pd3:
-    image: pingcap/pd
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -53,7 +53,7 @@ services:
     restart: on-failure
 
   tikv1:
-    image: pingcap/tikv
+    image: pingcap/tikv:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
@@ -70,7 +70,7 @@ services:
     restart: on-failure
 
   tikv2:
-    image: pingcap/tikv
+    image: pingcap/tikv:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
@@ -87,7 +87,7 @@ services:
     restart: on-failure
 
   tikv3:
-    image: pingcap/tikv
+    image: pingcap/tikv:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
@@ -104,7 +104,7 @@ services:
     restart: on-failure
 
   tidb:
-    image: pingcap/tidb
+    image: pingcap/tidb:latest
     ports:
       - "4000:4000"
       - "10080:10080"
