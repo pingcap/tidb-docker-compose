@@ -10,29 +10,33 @@ The above config files must be configured with metrics addr `pushgateway:9091`
 
 And config/*-dashboard.json are copied from [TiDB-Ansible repo](https://github.com/pingcap/tidb-ansible/tree/master/scripts)
 
+## Install Helm
 
-## Up
+[Helm](https://helm.sh) is used as a template render engine
+
+```
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+```
+
+Or if you use Mac, you can use homebrew to install Helm by `brew install kubernetes-helm`
+
+## Bring up TiDB cluster
 
 ```bash
 $ git clone https://github.com/tennix/tidb-docker-compose.git
 $ cd tidb-docker-compose
+$ cp compose/values.yaml values.yaml
+$ vi values.yaml # custom cluster size, docker image, port mapping etc
+$ helm template -f values.yaml compose > docker-compose.yaml
 $ docker-compose up -d
 ```
 
-## Access
+## Access TiDB cluster
 
-The services exposed by docker-compose are the followings:
-* pd: 2379
-* tidb: 4000, 10080
-* prometheus: 9090
-* grafana: 3000
-
-### Access TiDB
+TiDB uses ports: 4000(mysql) and 10080(status) by default
 
 ```bash
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
 
-### View Grafana monitor dashboard
-
-open your browser at http://localhost:3000
+And Grafana uses port 3000 by default, so open your browser at http://localhost:3000 to view monitor dashboard

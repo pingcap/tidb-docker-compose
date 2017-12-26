@@ -1,0 +1,122 @@
+{{- $pdSize := .Values.pd.size | int }}
+{{- $tikvSize := .Values.tikv.size | int }}
+{{- define "initial_cluster" }}
+{{- range until (.Values.pd.size | int) }}pd{{.}}=http://pd{{.}}:2380,{{- end }}
+{{- end }}
+{{- define "pd_list" }}
+{{- range until (.Values.pd.size | int) }}pd{{.}}:2379,{{- end }}
+{{- end }}
+{{- $grafanaImage := .Values.grafana.image | default "grafana/grafana:4.2.0" }}
+{{- $grafanaPort := .Values.grafana.port | default "3000" }}
+{{- $prometheusImage := .Values.prometheus.image | default "prom/prometheus:v2.0.0" }}
+{{- $prometheusPort := .Values.prometheus.port | default "9090" }}
+{{- $pushgatewayImage := .Values.pushgateway.image | default "prom/pushgateway:v0.3.1" }}
+{{- $dashboardInstallerImage := .Values.dashboardInstaller.image | default "pingcap/tidb-dashboard-installer:v1.0.0" }}
+version: '2.3'
+
+services:
+  {{- range until $pdSize }}
+  pd{{ . }}:
+    image: {{ $.Values.pd.image | default "pingcap/pd:latest" }}
+    ports:
+      - "2379"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/pd.toml:/pd.toml:ro
+    command:
+      - --name=pd{{ . }}
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd{{ . }}:2379
+      - --advertise-peer-urls=http://pd{{ . }}:2380
+      - --initial-cluster={{- template "initial_cluster" $ }}
+      - --config=/pd.toml
+    restart: on-failure
+  {{- end }}
+
+  {{- range until $tikvSize }}
+  tikv{{ . }}:
+    image: {{ $.Values.tikv.image | default "pingcap/tikv:latest" }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tikv.toml:/tikv.toml:ro
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv{{ . }}:20160
+      - --data-dir=/var/tikv
+      - --pd={{- template "pd_list" $ }}
+      - --config=/tikv.toml
+    depends_on:
+{{- range until $pdSize }}
+      - "pd{{.}}"
+{{- end }}
+    restart: on-failure
+  {{- end }}
+
+  tidb:
+    image: {{ .Values.tidb.image | default "pingcap/tidb:latest" }}
+    ports:
+{{- if .Values.tidb.mysqlPort }}
+      - "{{ .Values.tidb.mysqlPort }}:4000"
+{{- else }}
+      - "4000"
+{{- end }}
+{{- if .Values.tidb.statusPort }}
+      - "{{ .Values.tidb.statusPort }}:10080"
+{{- else }}
+      - "4000"
+{{- end }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tidb.toml:/tidb.toml:ro
+    command:
+      - --store=tikv
+      - --path={{- template "pd_list" $ }}
+      - --config=/tidb.toml
+      - -L=warn
+    depends_on:
+{{- range until $tikvSize }}
+      - "tikv{{.}}"
+{{- end }}
+    restart: on-failure
+
+  # monitors
+  pushgateway:
+    image: {{ $pushgatewayImage }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: on-failure
+  prometheus:
+    image: {{ $prometheusImage }}
+    ports:
+{{- if $prometheusPort }}
+      - "{{ $prometheusPort }}:9090"
+{{- else }}
+      - "9090"
+{{- end }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+    restart: on-failure
+  grafana:
+    image: {{ $grafanaImage }}
+    ports:
+{{- if $grafanaPort }}
+      - "{{ $grafanaPort }}:3000"
+{{- else }}
+      - "3000"
+{{- end }}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: on-failure
+  dashboard-installer:
+    image: {{ $dashboardInstallerImage }}
+    command: ["grafana:3000"]
+    volumes:
+      - ./config/grafana-datasource.json:/datasource.json:ro
+      - ./config/pd-dashboard.json:/pd.json:ro
+      - ./config/tikv-dashboard.json:/tikv.json:ro
+      - ./config/tidb-dashboard.json:/tidb.json:ro
+      - ./config/overview-dashboard.json:/overview.json:ro
+    restart: on-failure
