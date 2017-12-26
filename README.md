@@ -35,4 +35,4 @@ View Grafana monitor dashboard
 ```bash
 $ grafana_port=$(docker-compose port grafana 3000 | awk -F':' '{print $2}')
 ```
-open your browser at `http://localhost:${grafana_port}
+open your browser at `http://localhost:${grafana_port}`
