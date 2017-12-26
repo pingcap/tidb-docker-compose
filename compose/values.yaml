@@ -1,3 +1,4 @@
+data_dir: ./data
 pd:
   size: 3
   image: pingcap/pd:latest

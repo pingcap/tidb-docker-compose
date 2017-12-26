@@ -23,6 +23,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/pd.toml:/pd.toml:ro
+      - {{ $.Values.data_dir }}:/data
     command:
       - --name=pd{{ . }}
       - --client-urls=http://0.0.0.0:2379
@@ -30,6 +31,7 @@ services:
       - --advertise-client-urls=http://pd{{ . }}:2379
       - --advertise-peer-urls=http://pd{{ . }}:2380
       - --initial-cluster={{- template "initial_cluster" $ }}
+      - --data-dir=/data/pd{{ . }}
       - --config=/pd.toml
     restart: on-failure
   {{- end }}
@@ -40,10 +42,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
+      - {{ $.Values.data_dir }}:/data
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv{{ . }}:20160
-      - --data-dir=/var/tikv
+      - --data-dir=/data/tikv{{ . }}
       - --pd={{- template "pd_list" $ }}
       - --config=/tikv.toml
     depends_on:
@@ -88,6 +91,9 @@ services:
     restart: on-failure
   prometheus:
     image: {{ $prometheusImage }}
+    command:
+      - --storage.tsdb.path=/data/prometheus
+      - --config.file=/etc/prometheus/prometheus.yml
     ports:
 {{- if $prometheusPort }}
       - "{{ $prometheusPort }}:9090"
@@ -98,6 +104,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - {{ .Values.data_dir }}:/data
     restart: on-failure
   grafana:
     image: {{ $grafanaImage }}
