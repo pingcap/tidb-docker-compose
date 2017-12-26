@@ -1,0 +1,153 @@
+groups:
+- name: alert.rules
+  rules:
+  - alert: load_schema_fail
+    expr: rate(tidb_domain_load_schema_total{type="failed"}[1m]) > 0
+    for: 1s
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: rate(tidb_domain_load_schema_total{type=''failed''} instance:
+        {{ $labels.instance }} values: {{ $value }}'
+      summary: TiDB load schema fails
+  - alert: local_shema_latency
+    expr: histogram_quantile(1, rate(tidb_domain_load_schema_duration_bucket[5m]))
+      > 5
+    for: 1m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: histogram_quantile(1, rate(tidb_domain_load_schema_duration_bucket
+        [5m])) instance: {{ $labels.instance }}  values: {{ $value }}'
+      summary: TiDB load schema latency is over 5s
+  - alert: memery_abnormal
+    expr: go_memstats_heap_inuse_bytes{job="tidb"} > 1e+09
+    for: 10m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: go_memstats_heap_inuse_bytes{job=''tidb''} instance: {{
+        $labels.instance }}  values: {{ $value }}'
+      summary: TiDB mem heap is over 1GiB
+  - alert: tidb_query_duration
+    expr: histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m]))
+      BY (le, instance)) > 1
+    for: 5s
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'instance: {{ $labels.instance }} values: {{ $value }} alert: histogram_quantile(0.99,
+        sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le, instance))
+        > 1 .'
+      summary: TiDB query duration 99th percentile is above 1s
+  - alert: tidb_tikvclient_region_err
+    expr: sum(rate(tidb_tikvclient_region_err_total{type="server_is_busy"}[1m])) >
+      0
+    for: 1m
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(tidb_tikvclient_region_err_total{type=''server_is_busy''}[1m]))
+        instance: {{ $labels.instance }} values: {{ $value }}'
+      summary: TiDB server is busy
+  - alert: tikv_raft_process_ready
+    expr: sum(rate(tikv_raftstore_raft_process_nanos_total{type="ready"}[1m])) BY
+      (type, instance) / 1e+09 > 1
+    for: 1m
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(tikv_raftstore_raft_process_nanos_total{type=''ready''[1m]))
+        by (type, instance) / 1000000000 instance: {{ $labels.instance }} values:
+        {{ $value }}'
+      summary: TiKV raft process ready duration is above 1s
+  - alert: raft_sotre_msg
+    expr: sum(rate(tikv_server_report_failure_msg_total{type="unreachable"}[1m]))
+      > 10
+    for: 1m
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(tikv_server_raft_store_msg_total{type=''unreachable''}[1m]))
+        > 10  values:{{ $value }}'
+      summary: TiKV too many unreachable raft stores
+  - alert: tikv_channel_full_total
+    expr: sum(rate(tikv_channel_full_total[1m])) BY (type, instance) > 0
+    for: 1s
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(tikv_channel_full_total[1m])) by (type, instance)  instance:
+        {{ $labels.instance }}  values: {{ $value }}'
+      summary: TiKV channel full
+  - alert: coprocessor_pending_request
+    expr: sum(rate(tikv_coprocessor_pending_request[1m])) BY (type, instance) > 2
+    for: 10s
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(tikv_coprocessor_pending_request[1m])) by (type,instance)
+        > 2 type: {{ $labels.type }} instance: {{ $labels.instance }}  values: {{
+        $value }}'
+      summary: TiKV pending {{ $labels.type }} request is high
+  - alert: tikv_scheduler_context_total
+    expr: sum(tikv_scheduler_contex_total) BY (job) > 300
+    for: 2m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(tikv_scheduler_contex_total) by (job) > 300 instance:
+        {{ $labels.instance }}  values: {{ $value }}'
+      summary: TiKV scheduler context total
+  - alert: tikv_thread_cpu_seconds_total
+    expr: rate(tikv_thread_cpu_seconds_total{name="raftstore"}[1m]) > 0.8
+    for: 1m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: rate(tikv_thread_cpu_seconds_total{name=''raftstore''}[1m])
+        > 0.8 instance {{ $labels.instance }} values: {{ $value }}'
+      summary: TiKV raftstore thread CPU seconds is high
+  - alert: tikv_thread_cpu_seconds_total
+    expr: rate(tikv_thread_cpu_seconds_total{name="endpoint-pool"}[1m]) > 0.9
+    for: 1m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: rate(tikv_thread_cpu_seconds_total{name=''endpoint-pool''}[1m])
+        > 0.9 instance {{ $labels.instance }} values: {{ $value }}'
+      summary: TiKV endpoint-pool thread CPU seconds is high
+  - alert: tikv_thread_cpu_seconds_total
+    expr: rate(tikv_thread_cpu_seconds_total{name="sched-worker-pool"}[1m]) > 0.9
+    for: 1m
+    labels:
+      env: test-cluster
+    annotations:
+      description: 'alert: rate(tikv_thread_cpu_seconds_total{name=''sched-worker-pool''}[1m])
+        > 0.9 instance {{ $labels.instance }} values: {{ $value }}'
+      summary: TiKV sched-worker-pool thread CPU seconds is high
+  - alert: tikv_leader_drops
+    expr: delta(tikv_pd_heartbeat_tick_total{type="leader"}[30s]) < -10
+    for: 1s
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: delta(tikv_pd_heartbeat_tick_total{type=''leader''}[30s])
+        > 10 instance: {{ $labels.instance }}   values:{{ $value }}'
+      summary: TiKV leader drops
+  - alert: etcd_disk_fsync
+    expr: sum(rate(etcd_disk_wal_fsync_duration_seconds_count[1m])) BY (instance)
+      == 0
+    for: 1m
+    labels:
+      channels: alerts
+      env: test-cluster
+    annotations:
+      description: 'alert: sum(rate(etcd_disk_wal_fsync_duration_seconds_count[1m]))
+        by (instance) instance: {{ $labels.instance }}   values:{{ $value }}'
+      summary: PD etcd disk fsync is down
