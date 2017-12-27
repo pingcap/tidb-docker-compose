@@ -1,10 +1,10 @@
 {{- $pdSize := .Values.pd.size | int }}
 {{- $tikvSize := .Values.tikv.size | int }}
 {{- define "initial_cluster" }}
-{{- range until (.Values.pd.size | int) }}pd{{.}}=http://pd{{.}}:2380,{{- end }}
+{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}=http://pd{{.}}:2380{{- end }}
 {{- end }}
 {{- define "pd_list" }}
-{{- range until (.Values.pd.size | int) }}pd{{.}}:2379,{{- end }}
+{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}:2379{{- end }}
 {{- end }}
 {{- $grafanaImage := .Values.grafana.image | default "grafana/grafana:4.2.0" }}
 {{- $grafanaPort := .Values.grafana.port | default "3000" }}
