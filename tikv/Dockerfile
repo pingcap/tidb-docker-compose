@@ -15,11 +15,15 @@ RUN wget https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/${RUSTUP_
     && ./rustup-init -y --no-modify-path --default-toolchain ${RUST_TOOLCHAIN} \
     && chmod -R a+w $RUSTUP_HOME $CARGO_HOME
 
-RUN git clone https://github.com/pingcap/tikv.git /tikv
+ARG repo="https://github.com/pingcap/tikv.git"
+
+RUN git clone ${repo} /tikv
 
 WORKDIR /tikv
 
-RUN make
+ARG branch=master
+
+RUN git checkout ${branch} && make
 
 # Executable image
 FROM pingcap/alpine-glibc

@@ -1,9 +1,14 @@
 FROM node:8
 
-WORKDIR /home/node
-RUN git clone https://github.com/pingcap/tidb-vision.git
+ARG repo="https://github.com/pingcap/tidb-vision.git"
+
+RUN git clone ${repo} /home/node/tidb-vision
+
 WORKDIR /home/node/tidb-vision
-RUN npm install
+
+ARG branch=master
+
+RUN git checkout ${branch} && npm install
 
 ENV PD_ENDPOINT=localhost:9000
 

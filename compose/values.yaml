@@ -2,15 +2,29 @@ data_dir: ./data
 pd:
   size: 3
   image: pingcap/pd:latest
+  repo: https://github.com/pingcap/pd.git
+  branch: master
 
 tikv:
   size: 3
   image: pingcap/tikv:latest
+  repo: https://github.com/pingcap/tikv.git
+  branch: master
 
 tidb:
   image: pingcap/tidb:latest
+  repo: https://github.com/pingcap/tidb.git
+  branch: master
   mysqlPort: "4000"
   statusPort: "10080"
+
+tidbVision:
+  # currently there's no such image in DockerHub yet
+  # must leave `image` empty and build it from source
+  image: pingcap/tidb-vision:latest
+  repo: https://github.com/pingcap/tidb-vision.git
+  branch: master
+  port: "8010"
 
 grafana:
   image: grafana/grafana:4.2.0

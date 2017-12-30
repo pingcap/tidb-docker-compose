@@ -31,6 +31,10 @@ $ helm template -f values.yaml compose > docker-compose.yaml
 $ docker-compose up -d
 ```
 
+If you want to build docker image from source, leave pd/tikv/tidb image value empty and specify a repo and branch of each component in the values.yaml.
+
+[tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by leaving `tidbVision` empty.
+
 ## Access TiDB cluster
 
 TiDB uses ports: 4000(mysql) and 10080(status) by default
@@ -40,3 +44,5 @@ $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
 
 And Grafana uses port 3000 by default, so open your browser at http://localhost:3000 to view monitor dashboard
+
+If you enabled tidb-vision, you can view it at http://localhost:8010

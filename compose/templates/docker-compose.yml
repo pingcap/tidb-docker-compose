@@ -17,7 +17,15 @@ version: '2.3'
 services:
   {{- range until $pdSize }}
   pd{{ . }}:
-    image: {{ $.Values.pd.image | default "pingcap/pd:latest" }}
+    {{- if $.Values.pd.image }}
+    image: {{ $.Values.pd.image }}
+    {{- else }}
+    build:
+      context: ./pd
+      args:
+        repo: {{ $.Values.pd.repo }}
+        branch: {{ $.Values.pd.branch }}
+    {{- end }}
     ports:
       - "2379"
     volumes:
@@ -38,7 +46,15 @@ services:
 
   {{- range until $tikvSize }}
   tikv{{ . }}:
-    image: {{ $.Values.tikv.image | default "pingcap/tikv:latest" }}
+    {{- if $.Values.tikv.image }}
+    image: {{ $.Values.tikv.image }}
+    {{- else }}
+    build:
+      context: ./tikv
+      args:
+        repo: {{ $.Values.tikv.repo }}
+        branch: {{ $.Values.tikv.branch }}
+    {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
@@ -50,25 +66,33 @@ services:
       - --pd={{- template "pd_list" $ }}
       - --config=/tikv.toml
     depends_on:
-{{- range until $pdSize }}
+      {{- range until $pdSize }}
       - "pd{{.}}"
-{{- end }}
+      {{- end }}
     restart: on-failure
   {{- end }}
 
   tidb:
-    image: {{ .Values.tidb.image | default "pingcap/tidb:latest" }}
+    {{- if .Values.tidb.image }}
+    image: {{ .Values.tidb.image }}
+    {{- else }}
+    build:
+      context: ./tidb
+      args:
+        repo: {{ .Values.tidb.repo }}
+        branch: {{ .Values.tidb.branch }}
+    {{- end }}
     ports:
-{{- if .Values.tidb.mysqlPort }}
+      {{- if .Values.tidb.mysqlPort }}
       - "{{ .Values.tidb.mysqlPort }}:4000"
-{{- else }}
+      {{- else }}
       - "4000"
-{{- end }}
-{{- if .Values.tidb.statusPort }}
+      {{- end }}
+      {{- if .Values.tidb.statusPort }}
       - "{{ .Values.tidb.statusPort }}:10080"
-{{- else }}
+      {{- else }}
       - "4000"
-{{- end }}
+      {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/tidb.toml:/tidb.toml:ro
@@ -78,10 +102,33 @@ services:
       - --config=/tidb.toml
       - -L=warn
     depends_on:
-{{- range until $tikvSize }}
+      {{- range until $tikvSize }}
       - "tikv{{.}}"
-{{- end }}
+      {{- end }}
     restart: on-failure
+
+{{- if .Values.tidbVision }}
+  tidb-vision:
+    {{- if .Values.tidbVision.image }}
+    image: {{ .Values.tidbVision.image }}
+    {{- else }}
+    build:
+      context: ./tidb-vision
+      args:
+        repo: {{ .Values.tidbVision.repo }}
+        branch: {{ .Values.tidbVision.branch }}
+    {{- end }}
+    environment:
+      # TODO: we use only one pd endpoint
+      # because tidb-vision doesn't support multiple pd endpoint now
+      PD_ENDPOINT: pd0:2379
+    ports:
+      {{- if .Values.tidbVision.port }}
+      - "{{ .Values.tidbVision.port }}:8010"
+      {{- else }}
+      - "8010"
+      {{- end }}
+{{- end }}
 
   # monitors
   pushgateway:
@@ -95,11 +142,11 @@ services:
       - --storage.tsdb.path=/data/prometheus
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
-{{- if $prometheusPort }}
+      {{- if $prometheusPort }}
       - "{{ $prometheusPort }}:9090"
-{{- else }}
+      {{- else }}
       - "9090"
-{{- end }}
+      {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -109,11 +156,11 @@ services:
   grafana:
     image: {{ $grafanaImage }}
     ports:
-{{- if $grafanaPort }}
+      {{- if $grafanaPort }}
       - "{{ $grafanaPort }}:3000"
-{{- else }}
+      {{- else }}
       - "3000"
-{{- end }}
+      {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
     restart: on-failure

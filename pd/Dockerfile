@@ -3,11 +3,15 @@ FROM golang:1.9-alpine AS builder
 
 RUN apk update && apk add --no-cache git make
 
-RUN git clone https://github.com/pingcap/pd.git /go/src/github.com/pingcap/pd
+ARG repo="https://github.com/pingcap/pd.git"
+
+RUN git clone ${repo} /go/src/github.com/pingcap/pd
 
 WORKDIR /go/src/github.com/pingcap/pd
 
-RUN make
+ARG branch=master
+
+RUN git checkout ${branch} && make
 
 # Executable image
 FROM alpine:3.5
