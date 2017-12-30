@@ -16,6 +16,6 @@ COPY --from=builder /go/src/github.com/pingcap/tidb/bin/tidb-server /tidb-server
 
 WORKDIR /
 
-EXPOSE 4000
+EXPOSE 4000 10080
 
 ENTRYPOINT ["/tidb-server"]

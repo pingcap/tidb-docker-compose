@@ -12,7 +12,7 @@ RUN make
 # Executable image
 FROM alpine:3.5
 
-COPY --from=builder /go/src/github.com/pingcap/tidb/bin/pd-server /pd-server
+COPY --from=builder /go/src/github.com/pingcap/pd/bin/pd-server /pd-server
 
 WORKDIR /
 
