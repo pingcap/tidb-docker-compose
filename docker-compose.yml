@@ -1,0 +1,174 @@
+version: '2.3'
+
+services:
+  pd0:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+    command:
+      - --name=pd0
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd0:2379
+      - --advertise-peer-urls=http://pd0:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd0
+      - --config=/pd.toml
+    restart: on-failure
+  pd1:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+    command:
+      - --name=pd1
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd1:2379
+      - --advertise-peer-urls=http://pd1:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd1
+      - --config=/pd.toml
+    restart: on-failure
+  pd2:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+    command:
+      - --name=pd2
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd2:2379
+      - --advertise-peer-urls=http://pd2:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd2
+      - --config=/pd.toml
+    restart: on-failure
+
+  tikv0:
+    image: pingcap/tikv:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv0:20160
+      - --data-dir=/data/tikv0
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  tikv1:
+    image: pingcap/tikv:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv1:20160
+      - --data-dir=/data/tikv1
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  tikv2:
+    image: pingcap/tikv:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv2:20160
+      - --data-dir=/data/tikv2
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+
+  tidb:
+    image: pingcap/tidb:latest
+    ports:
+      - "4000:4000"
+      - "10080:10080"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/tidb.toml:/tidb.toml:ro
+    command:
+      - --store=tikv
+      - --path=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tidb.toml
+      - -L=warn
+    depends_on:
+      - "tikv0"
+      - "tikv1"
+      - "tikv2"
+    restart: on-failure
+
+  tidb-vision:
+    image: pingcap/tidb-vision:latest
+    environment:
+      # TODO: we use only one pd endpoint
+      # because tidb-vision doesn't support multiple pd endpoint now
+      PD_ENDPOINT: pd0:2379
+    ports:
+      - "8010:8010"
+
+  # monitors
+  pushgateway:
+    image: prom/pushgateway:v0.3.1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: on-failure
+  prometheus:
+    image: prom/prometheus:v2.0.0
+    command:
+      - --storage.tsdb.path=/data/prometheus
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - ./data:/data
+    restart: on-failure
+  grafana:
+    image: grafana/grafana:4.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: on-failure
+  dashboard-installer:
+    image: pingcap/tidb-dashboard-installer:v1.0.0
+    command: ["grafana:3000"]
+    volumes:
+      - ./config/grafana-datasource.json:/datasource.json:ro
+      - ./config/pd-dashboard.json:/pd.json:ro
+      - ./config/tikv-dashboard.json:/tikv.json:ro
+      - ./config/tidb-dashboard.json:/tidb.json:ro
+      - ./config/overview-dashboard.json:/overview.json:ro
+    restart: on-failure
