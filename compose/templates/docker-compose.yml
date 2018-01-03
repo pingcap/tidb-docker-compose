@@ -20,11 +20,17 @@ services:
     {{- if $.Values.pd.image }}
     image: {{ $.Values.pd.image }}
     {{- else }}
+    image: pd:latest
     build:
       context: ./pd
+      {{- if eq $.Values.pd.buildFrom "remote" }}
+      dockerfile: Dockerfile.src
       args:
-        repo: {{ $.Values.pd.repo }}
-        branch: {{ $.Values.pd.branch }}
+        repo: {{ $.Values.pd.repo | default "https://github.com/pingcap/pd.git" }}
+        branch: {{ $.Values.pd.branch | default "master" }}
+      {{- else }}
+      dockerfile: Dockerfile.bin
+      {{- end }}
     {{- end }}
     ports:
       - "2379"
@@ -49,13 +55,19 @@ services:
     {{- if $.Values.tikv.image }}
     image: {{ $.Values.tikv.image }}
     {{- else }}
+    image: tikv:latest
     build:
       context: ./tikv
+      {{- if eq $.Values.tikv.buildFrom "remote" }}
+      dockerfile: Dockerfile.src
       args:
-        repo: {{ $.Values.tikv.repo }}
-        branch: {{ $.Values.tikv.branch }}
-        rustupVersion: {{ $.Values.rustupVersion }}
-        rust_toolchain: {{ $.Values.rustToolChain }}
+        repo: {{ $.Values.tikv.repo | default "https://github.com/pingcap/tikv.git" }}
+        branch: {{ $.Values.tikv.branch | default "master" }}
+        rustupVersion: {{ $.Values.rustupVersion | default "1.7.0" }}
+        rust_toolchain: {{ $.Values.rustToolChain | default "nightly-2017-08-09" }}
+      {{- else }}
+      dockerfile: Dockerfile.bin
+      {{- end }}
     {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -78,11 +90,17 @@ services:
     {{- if .Values.tidb.image }}
     image: {{ .Values.tidb.image }}
     {{- else }}
+    image: tidb:latest
     build:
       context: ./tidb
+      {{- if eq .Values.tidb.buildFrom "remote" }}
+      dockerfile: Dockerfile.src
       args:
-        repo: {{ .Values.tidb.repo }}
-        branch: {{ .Values.tidb.branch }}
+        repo: {{ .Values.tidb.repo | default "https://github.com/pingcap/tidb.git" }}
+        branch: {{ .Values.tidb.branch | default "master" }}
+      {{- else }}
+      dockerfile: Dockerfile.bin
+      {{- end }}
     {{- end }}
     ports:
       {{- if .Values.tidb.mysqlPort }}
@@ -114,11 +132,17 @@ services:
     {{- if .Values.tidbVision.image }}
     image: {{ .Values.tidbVision.image }}
     {{- else }}
+    image: tidb-vision:latest
     build:
       context: ./tidb-vision
+      {{- if eq .Values.tidbVision.buildFrom "remote" }}
+      dockerfile: Dockerfile.remote
       args:
-        repo: {{ .Values.tidbVision.repo }}
-        branch: {{ .Values.tidbVision.branch }}
+        repo: {{ .Values.tidbVision.repo | default "https://github.com/pingcap/tidb-vision.git" }}
+        branch: {{ .Values.tidbVision.branch | default "master" }}
+      {{- else }}
+      dockerfile: Dockerfile.local
+      {{- end }}
     {{- end }}
     environment:
       # TODO: we use only one pd endpoint

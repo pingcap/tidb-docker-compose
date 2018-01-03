@@ -47,10 +47,19 @@ $ cd tidb-docker-compose
 $ cp compose/values.yaml values.yaml
 $ vi values.yaml # custom cluster size, docker image, port mapping etc
 $ helm template -f values.yaml compose > generated-docker-compose.yaml
-$ docker-compose up -d -f generated-docker-compose.yaml
+$ docker-compose -f generated-docker-compose.yaml up -d
 ```
 
-If you want to build docker image from source, leave pd/tikv/tidb image value empty and specify a repo and branch of each component in the values.yaml.
+You can build docker image yourself for development test.
+
+* Build locally
+
+  For pd, tikv and tidb, leave their `image` field empty and set their `buildFrom` field to `local`. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server and tidb/bin/tidb-server.
+  For tidbVision, leave its `image` field empty and set its `buildFrom` field to `local`. And then copy tidb-vision repo to tidb-vision/tidb-vision.
+
+* Build from remote source
+
+  Leave pd, tikv, tidb and tidbVision `image` field empty and set their `buildFrom` field to `remote`
 
 [tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by leaving `tidbVision` empty.
 

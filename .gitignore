@@ -1,2 +1,7 @@
 /values.yaml
+/generated-docker-compose.yml
 /data
+/pd/bin
+/tikv/bin
+/tidb/bin
+/tidb-vision/tidb-vision
