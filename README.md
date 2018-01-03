@@ -3,7 +3,7 @@
 ## Quick start
 
 ```bash
-$ git clone https://github.com/tennix/tidb-docker-compose.git
+$ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose && docker-compose up -d
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
@@ -42,7 +42,7 @@ Or if you use Mac, you can use homebrew to install Helm by `brew install kuberne
 ### Bring up TiDB cluster
 
 ```bash
-$ git clone https://github.com/tennix/tidb-docker-compose.git
+$ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose
 $ cp compose/values.yaml values.yaml
 $ vi values.yaml # custom cluster size, docker image, port mapping etc

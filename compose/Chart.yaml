@@ -2,9 +2,9 @@ apiVersion: v1
 description: tidb-docker-compose
 name: tidb-docker-compose
 version: 0.1.0
-home: https://github.com/tennix/tidb-docker-compose
+home: https://github.com/pingcap/tidb-docker-compose
 sources:
-  - https://github.com/tennix/tidb-docker-compose
+  - https://github.com/pingcap/tidb-docker-compose
 keywords:
   - newsql
   - htap
