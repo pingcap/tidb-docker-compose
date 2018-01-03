@@ -54,6 +54,8 @@ services:
       args:
         repo: {{ $.Values.tikv.repo }}
         branch: {{ $.Values.tikv.branch }}
+        rustupVersion: {{ $.Values.rustupVersion }}
+        rust_toolchain: {{ $.Values.rustToolChain }}
     {{- end }}
     volumes:
       - /etc/localtime:/etc/localtime:ro

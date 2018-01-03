@@ -1,4 +1,8 @@
 data_dir: ./data
+
+rustupVersion: 1.7.0
+rustToolChain: nightly-2017-08-09
+
 pd:
   size: 3
   image: pingcap/pd:latest
