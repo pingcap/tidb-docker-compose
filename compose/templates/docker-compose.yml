@@ -47,6 +47,12 @@ services:
       - --initial-cluster={{- template "initial_cluster" $ }}
       - --data-dir=/data/pd{{ . }}
       - --config=/pd.toml
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
     restart: on-failure
   {{- end }}
 
@@ -83,6 +89,12 @@ services:
       {{- range until $pdSize }}
       - "pd{{.}}"
       {{- end }}
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
     restart: on-failure
   {{- end }}
 
@@ -125,6 +137,12 @@ services:
       {{- range until $tikvSize }}
       - "tikv{{.}}"
       {{- end }}
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
     restart: on-failure
 
 {{- if .Values.tidbVision }}
@@ -163,6 +181,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   prometheus:
+    user: root
     image: {{ $prometheusImage }}
     command:
       - --storage.tsdb.path=/data/prometheus

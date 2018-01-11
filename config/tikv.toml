@@ -166,7 +166,7 @@ address = "pushgateway:9091"
 # If max-open-files = -1, RocksDB will prefetch index and filter blocks into
 # block cache at startup, so if your database has a large working set, it will
 # take several minutes to open the db.
-# max-open-files = 40960
+max-open-files = 1024
 
 # Max size of rocksdb's MANIFEST file.
 # For detailed explanation please refer to https://github.com/facebook/rocksdb/wiki/MANIFEST
@@ -380,7 +380,7 @@ address = "pushgateway:9091"
 
 [raftdb]
 # max-sub-compactions = 1
-# max-open-files = 40960
+max-open-files = 1024
 # max-manifest-file-size = "20MB"
 # create-if-missing = true
 # writable-file-max-buffer-size = "1MB"

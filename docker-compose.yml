@@ -143,6 +143,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   prometheus:
+    user: root
     image: prom/prometheus:v2.0.0
     command:
       - --storage.tsdb.path=/data/prometheus
