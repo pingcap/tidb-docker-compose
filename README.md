@@ -21,7 +21,7 @@ $ mysql -h 127.0.0.1 -P 4000 -u root
 * config/tikv.toml is copied from [TiKV repo](https://github.com/pingcap/tikv/tree/master/etc)
 * config/tidb.toml is copied from [TiDB repo](https://github.com/pingcap/tidb/tree/master/config)
 
-If you find these configuration files outdated or mismatch with TiDB version, you can copy these files from their upstream repos and change their metrics addr with `pushgateway:9091`
+If you find these configuration files outdated or mismatch with TiDB version, you can copy these files from their upstream repos and change their metrics addr with `pushgateway:9091`. Also `max-open-files` are configured to `1024` in tikv.toml to simplify quick start on Linux, because setting up ulimit on Linux with docker is quite tedious.
 
 And config/*-dashboard.json are copied from [TiDB-Ansible repo](https://github.com/pingcap/tidb-ansible/tree/master/scripts)
 
