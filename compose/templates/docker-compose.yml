@@ -35,7 +35,6 @@ services:
     ports:
       - "2379"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/pd.toml:/pd.toml:ro
       - {{ $.Values.data_dir }}:/data
     command:
@@ -76,7 +75,6 @@ services:
       {{- end }}
     {{- end }}
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
       - {{ $.Values.data_dir }}:/data
     command:
@@ -126,7 +124,6 @@ services:
       - "4000"
       {{- end }}
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tidb.toml:/tidb.toml:ro
     command:
       - --store=tikv
@@ -177,8 +174,6 @@ services:
   # monitors
   pushgateway:
     image: {{ $pushgatewayImage }}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   prometheus:
     user: root
@@ -193,7 +188,6 @@ services:
       - "9090"
       {{- end }}
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
       - {{ .Values.data_dir }}:/data
@@ -206,8 +200,6 @@ services:
       {{- else }}
       - "3000"
       {{- end }}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   dashboard-installer:
     image: {{ $dashboardInstallerImage }}

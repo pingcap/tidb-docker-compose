@@ -6,7 +6,6 @@ services:
     ports:
       - "2379"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
     command:
@@ -24,7 +23,6 @@ services:
     ports:
       - "2379"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
     command:
@@ -42,7 +40,6 @@ services:
     ports:
       - "2379"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
     command:
@@ -59,7 +56,6 @@ services:
   tikv0:
     image: pingcap/tikv:latest
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
     command:
@@ -76,7 +72,6 @@ services:
   tikv1:
     image: pingcap/tikv:latest
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
     command:
@@ -93,7 +88,6 @@ services:
   tikv2:
     image: pingcap/tikv:latest
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
     command:
@@ -114,7 +108,6 @@ services:
       - "4000:4000"
       - "10080:10080"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/tidb.toml:/tidb.toml:ro
     command:
       - --store=tikv
@@ -139,8 +132,6 @@ services:
   # monitors
   pushgateway:
     image: prom/pushgateway:v0.3.1
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   prometheus:
     user: root
@@ -151,7 +142,6 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
       - ./data:/data
@@ -160,8 +150,6 @@ services:
     image: grafana/grafana:4.2.0
     ports:
       - "3000:3000"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
     restart: on-failure
   dashboard-installer:
     image: pingcap/tidb-dashboard-installer:v1.0.0
