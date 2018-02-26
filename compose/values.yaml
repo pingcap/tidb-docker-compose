@@ -20,7 +20,7 @@ tidb:
 # comment this out to disable tidb-vision
 tidbVision:
   image: pingcap/tidb-vision:latest
-  buildContext: ./tidb-vision
+  buildPath: ./tidb-vision
   port: "8010"
 
 grafana:

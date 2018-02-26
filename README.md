@@ -44,24 +44,25 @@ Or if you use Mac, you can use homebrew to install Helm by `brew install kuberne
 ```bash
 $ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose
-$ cp compose/values.yaml values.yaml
-$ vi values.yaml # custom cluster size, docker image, port mapping etc
-$ helm template -f values.yaml compose > generated-docker-compose.yaml
+$ vi compose/values.yaml # custom cluster size, docker image, port mapping etc
+$ helm template compose > generated-docker-compose.yaml
 $ docker-compose -f generated-docker-compose.yaml up -d
 ```
 
 You can build docker image yourself for development test.
 
-* Build locally
+* Build from binary
 
-  For pd, tikv and tidb, leave their `image` field empty and set their `buildFrom` field to `local`. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server and tidb/bin/tidb-server.
-  For tidbVision, leave its `image` field empty and set its `buildFrom` field to `local`. And then copy tidb-vision repo to tidb-vision/tidb-vision.
+  For pd, tikv and tidb, comment their `image` and `buildPath` fields out. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server and tidb/bin/tidb-server.
+  These binary files can be built locally or downloaded from https://download.pingcap.org/tidb-latest-linux-amd64.tar.gz
+  For tidbVision, comment its `image` and `buildPath` fields out. And then copy tidb-vision repo to tidb-vision/tidb-vision.
 
-* Build from remote source
+* Build from source
 
-  Leave pd, tikv, tidb and tidbVision `image` field empty and set their `buildFrom` field to `remote`
+  Leave pd, tikv, tidb and tidbVision `image` field empty and set their `buildPath` field to their source directory.
+  For example, if your local tikv source directory is $GOPATH/src/github.com/pingcap/tikv, just set tikv `buildPath` to `$GOPATH/src/github.com/pingcap/tikv`
 
-[tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by leaving `tidbVision` empty.
+[tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
 
 ### Access TiDB cluster
 
