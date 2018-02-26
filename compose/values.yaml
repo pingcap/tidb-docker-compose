@@ -3,26 +3,24 @@ data_dir: ./data
 pd:
   size: 3
   image: pingcap/pd:latest
-  # build from local binary or remote source if image is empty
-  buildFrom: local             # local | remote
+  buildPath: ./pd
 
 tikv:
   size: 3
   image: pingcap/tikv:latest
-  # build from local binary or remote source if image is empty
-  buildFrom: local             # local | remote
+  # Specify tikv source directory to build from source locally
+  buildPath: $GOPATH/src/github.com/pingcap/tikv
 
 tidb:
   image: pingcap/tidb:latest
-  # build from local binary or remote source if image is empty
-  buildFrom: local             # local | remote
+  buildPath: ./tidb
   mysqlPort: "4000"
   statusPort: "10080"
 
+# comment this out to disable tidb-vision
 tidbVision:
   image: pingcap/tidb-vision:latest
-  # build from local source or remote source if image is empty
-  buildFrom: local              # local | remote
+  buildContext: ./tidb-vision
   port: "8010"
 
 grafana:
