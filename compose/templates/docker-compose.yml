@@ -23,6 +23,7 @@ services:
     image: pd:latest
     build:
       context: {{ $.Values.pd.buildPath | default "./pd" }}
+      dockerfile: {{ $.Values.pd.dockerfile | default "Dockerfile" }}
     {{- end }}
     ports:
       - "2379"
@@ -55,6 +56,7 @@ services:
     image: tikv:latest
     build:
       context: {{ $.Values.tikv.buildPath | default "./tikv" }}
+      dockerfile: {{ $.Values.tikv.dockerfile | default "Dockerfile" }}
     {{- end }}
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
@@ -85,6 +87,7 @@ services:
     image: tidb:latest
     build:
       context: {{ .Values.tidb.buildPath | default "./tidb" }}
+      dockerfile: {{ .Values.tidb.dockerfile | default "Dockerfile" }}
     {{- end }}
     ports:
       {{- if .Values.tidb.mysqlPort }}
@@ -124,6 +127,7 @@ services:
     image: tidb-vision:latest
     build:
       context: {{ .Values.tidbVision.buildPath | default "./tidb-vision" }}
+      dockerfile: {{ .Values.tidbVision.dockerfile | default "Dockerfile" }}
     {{- end }}
     environment:
       # TODO: we use only one pd endpoint
