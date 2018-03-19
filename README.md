@@ -72,7 +72,7 @@ You can build docker image yourself for development test.
 ### Debug TiDB/TiKV/PD instances
 Prerequisites:
 
-Pprof: That is a tool for visualization and analysis of profiling data. Follow [these instructions](https://github.com/google/pprof#building-pprof) to install pprof.
+Pprof: This is a tool for visualization and analysis of profiling data. Follow [these instructions](https://github.com/google/pprof#building-pprof) to install pprof.
 
 Graphviz: [http://www.graphviz.org/](http://www.graphviz.org/), used to generate graphic visualizations of profiles.
 
@@ -80,21 +80,21 @@ Graphviz: [http://www.graphviz.org/](http://www.graphviz.org/), used to generate
 
 ```bash
 # This script contains a parameter, the parameter is the service name of TiDB or PD instances
-eg: ./tool/go_debug pd0
-
+$ ./tool/go_debug pd0
 ```
+The above command will produce graphic visualizations of profiles of `pd0` that can be accessed through the browser.
 
 * debug TiKV instances
 
 ```bash
-# This script contains a parameter, the parameter is the service name of TiKV instances
-eg: ./tool/tikv_debug
+### step 1: select a tikv instance(here is tikv0) to enter debug container
+$ ./tool/tikv_debug tikv0
 
-# generate flame graph
-./run_flamegraph.sh 1  # 1 is the tikv intance's process id
+### after step 1, we can generate flame graph for tikv0 in debug container
+$ ./run_flamegraph.sh 1  # 1 is the tikv0's process id
 
-# fetch tikv instance's stack informations with GDB
-gdb /tikv-server 1 -batch -ex "thread apply all bt" -ex "info threads"
+### also can fetch tikv0's stack informations with GDB in debug container
+$ gdb /tikv-server 1 -batch -ex "thread apply all bt" -ex "info threads"
 ```
 
 ### Access TiDB cluster
