@@ -1,0 +1,28 @@
+#!/bin/bash -e
+
+if [[ ! ${1:-} ]]
+then
+	echo "please specify the tikv service name! eg: ${0} tikv0"
+	exit 1
+fi
+
+serviceName=${1}
+shortName=`echo ${serviceName}|tr -cd '[a-zA-Z]'`
+suffix=`uuidgen|cut -d'-' -f1|tr '[A-Z]' '[a-z]'`
+tmpdir="./tmp"
+
+WORKSPACE=$(cd $(dirname $0)/..; pwd)
+
+# change workspace
+cd $WORKSPACE
+[[ ! -d ${tmpdir} ]] && mkdir ${tmpdir}
+docker cp tidbdockercompose_${serviceName}_1:/${shortName}-server ${tmpdir}
+
+docker run -ti --rm --name=tidb-debug-${suffix} \
+	--pid=container:tidbdockercompose_${serviceName}_1 \
+	--network=container:tidbdockercompose_${serviceName}_1 \
+	-v ${WORKSPACE}/${tmpdir}/${shortName}-server:/${shortName}-server \
+	--ipc=container:tidbdockercompose_${serviceName}_1 \
+	--cap-add=SYS_PTRACE \
+	--privileged=true \
+	uhub.service.ucloud.cn/pingcap/tidb-debug:latest
