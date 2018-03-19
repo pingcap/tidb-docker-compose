@@ -69,6 +69,34 @@ You can build docker image yourself for development test.
 
 [tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
 
+### Debug TiDB/TiKV/PD instances
+Prerequisites:
+
+Pprof: That is a tool for visualization and analysis of profiling data. Follow [these instructions](https://github.com/google/pprof#building-pprof) to install pprof.
+
+Graphviz: [http://www.graphviz.org/](http://www.graphviz.org/), used to generate graphic visualizations of profiles.
+
+* debug TiDB or PD instances
+
+```bash
+# This script contains a parameter, the parameter is the service name of TiDB or PD instances
+eg: ./tool/go_debug pd0
+
+```
+
+* debug TiKV instances
+
+```bash
+# This script contains a parameter, the parameter is the service name of TiKV instances
+eg: ./tool/tikv_debug
+
+# generate flame graph
+./run_flamegraph.sh 1  # 1 is the tikv intance's process id
+
+# fetch tikv instance's stack informations with GDB
+gdb /tikv-server 1 -batch -ex "thread apply all bt" -ex "info threads"
+```
+
 ### Access TiDB cluster
 
 TiDB uses ports: 4000(mysql) and 10080(status) by default
