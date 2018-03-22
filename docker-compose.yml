@@ -113,7 +113,6 @@ services:
       - --store=tikv
       - --path=pd0:2379,pd1:2379,pd2:2379
       - --config=/tidb.toml
-      - -L=warn
     depends_on:
       - "tikv0"
       - "tikv1"

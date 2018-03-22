@@ -106,7 +106,6 @@ services:
       - --store=tikv
       - --path={{- template "pd_list" $ }}
       - --config=/tidb.toml
-      - -L=warn
     depends_on:
       {{- range until $tikvSize }}
       - "tikv{{.}}"
