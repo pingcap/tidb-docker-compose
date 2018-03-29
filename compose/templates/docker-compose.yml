@@ -12,7 +12,7 @@
 {{- $prometheusPort := .Values.prometheus.port | default "9090" }}
 {{- $pushgatewayImage := .Values.pushgateway.image | default "prom/pushgateway:v0.3.1" }}
 {{- $dashboardInstallerImage := .Values.dashboardInstaller.image | default "pingcap/tidb-dashboard-installer:v1.0.0" }}
-version: '2.3'
+version: '2.1'
 
 services:
   {{- range until $pdSize }}

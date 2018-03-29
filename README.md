@@ -1,5 +1,10 @@
 # TiDB docker-compose
 
+## Requirements
+
+* Docker >= 16.10
+* Docker Compose >= 1.6.0
+
 ## Quick start
 
 ```bash
