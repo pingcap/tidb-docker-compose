@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_TIDB-MASTER",
-      "label": "tidb-master",
+      "name": "DS_TEST-CLUSTER",
+      "label": "test-cluster",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -14,7 +14,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "4.5.2"
+      "version": "4.6.3"
     },
     {
       "type": "panel",
@@ -42,7 +42,17 @@
     }
   ],
   "annotations": {
-    "list": []
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
   "editable": true,
   "gnetId": null,
@@ -58,7 +68,7 @@
       "panels": [
         {
           "columns": [],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fontSize": "100%",
           "hideTimeOverride": true,
           "id": 57,
@@ -129,7 +139,7 @@
         },
         {
           "columns": [],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fontSize": "100%",
           "hideTimeOverride": true,
           "id": 59,
@@ -228,7 +238,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 1,
           "id": 55,
@@ -306,7 +316,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 0,
           "id": 58,
           "legend": {
@@ -383,7 +393,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 60,
           "legend": {
@@ -474,7 +484,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 2,
           "fill": 1,
           "id": 62,
@@ -559,7 +569,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 61,
           "legend": {
@@ -640,7 +650,7 @@
       "titleSize": "h6"
     },
     {
-      "collapse": false,
+      "collapse": true,
       "height": 250,
       "panels": [
         {
@@ -652,7 +662,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -740,7 +750,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": null,
           "editable": true,
           "error": false,
@@ -818,7 +828,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "editable": true,
           "error": false,
@@ -897,7 +907,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "format": "none",
           "gauge": {
             "maxValue": 100,
@@ -970,7 +980,7 @@
               "value": "current"
             }
           ],
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fontSize": "100%",
@@ -1072,54 +1082,11 @@
           "type": "table"
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    0.8
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "avg(pd_cluster_status{type=\"storage_size\"}) / avg(pd_cluster_status{type=\"storage_capacity\"})",
-                    "hide": false,
-                    "intervalFactor": 4,
-                    "legendFormat": "used ratio",
-                    "refId": "B",
-                    "step": 20
-                  },
-                  "params": [
-                    "B",
-                    "5m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "Storage used space is above 80%.",
-            "name": "Current Storage Usage alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 2,
           "editable": true,
           "error": false,
@@ -1156,6 +1123,7 @@
           "targets": [
             {
               "expr": "pd_cluster_status{instance=\"$instance\",type=\"storage_size\"}",
+              "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
               "legendFormat": "strage size",
@@ -1164,6 +1132,7 @@
             },
             {
               "expr": "avg(pd_cluster_status{type=\"storage_size\"}) / avg(pd_cluster_status{type=\"storage_capacity\"})",
+              "format": "time_series",
               "hide": false,
               "intervalFactor": 4,
               "legendFormat": "used ratio",
@@ -1171,15 +1140,7 @@
               "step": 20
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 0.8
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Current Storage Usage",
@@ -1221,7 +1182,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 31,
           "legend": {
@@ -1292,54 +1253,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    0.2
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "min(pd_cluster_status{type=\"leader_balance_ratio\"})",
-                    "hide": true,
-                    "intervalFactor": 2,
-                    "legendFormat": "ratio",
-                    "refId": "B",
-                    "step": 4
-                  },
-                  "params": [
-                    "B",
-                    "1m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "Region leader balance ratio is high.",
-            "name": "Leader Banlace Ratio alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 4,
           "editable": true,
           "error": false,
@@ -1371,6 +1289,7 @@
           "targets": [
             {
               "expr": "pd_cluster_status{instance=\"$instance\",type=\"leader_balance_ratio\"}",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "leader max diff ratio",
               "refId": "A",
@@ -1378,6 +1297,7 @@
             },
             {
               "expr": "min(pd_cluster_status{type=\"leader_balance_ratio\"})",
+              "format": "time_series",
               "hide": true,
               "intervalFactor": 2,
               "legendFormat": "ratio",
@@ -1385,15 +1305,7 @@
               "step": 4
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 0.2
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Leader Balance Ratio",
@@ -1431,54 +1343,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    0.2
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "min(pd_cluster_status{type=\"region_balance_ratio\"})",
-                    "hide": true,
-                    "intervalFactor": 2,
-                    "legendFormat": "ratio",
-                    "refId": "B",
-                    "step": 4
-                  },
-                  "params": [
-                    "B",
-                    "5m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "Store balance ratio is high",
-            "name": "Region Balance Ratio alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 4,
           "editable": true,
           "error": false,
@@ -1510,6 +1379,7 @@
           "targets": [
             {
               "expr": "pd_cluster_status{instance=\"$instance\",type=\"region_balance_ratio\"}",
+              "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
               "legendFormat": "\bstore balance ratio",
@@ -1518,6 +1388,7 @@
             },
             {
               "expr": "min(pd_cluster_status{type=\"region_balance_ratio\"})",
+              "format": "time_series",
               "hide": true,
               "intervalFactor": 2,
               "legendFormat": "ratio",
@@ -1525,15 +1396,7 @@
               "step": 4
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 0.2
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Region Balance Ratio",
@@ -1575,7 +1438,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 0,
@@ -1668,7 +1531,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 32,
           "legend": {
@@ -1748,7 +1611,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 33,
           "legend": {
@@ -1822,6 +1685,94 @@
               "show": true
             }
           ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "decimals": 4,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 63,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 2,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pd_cluster_status{instance=\"$instance\",type=\"leader_balance_ratio\"}",
+              "intervalFactor": 2,
+              "legendFormat": "leader max diff ratio",
+              "refId": "A",
+              "step": 10
+            },
+            {
+              "expr": "min(pd_cluster_status{type=\"leader_balance_ratio\"})",
+              "hide": true,
+              "intervalFactor": 2,
+              "legendFormat": "ratio",
+              "refId": "B",
+              "step": 4
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Leader Balance Ratio",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
         }
       ],
       "repeat": "instance",
@@ -1832,7 +1783,7 @@
       "titleSize": "h6"
     },
     {
-      "collapse": false,
+      "collapse": true,
       "height": "250px",
       "panels": [
         {
@@ -1840,7 +1791,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 0,
@@ -1932,7 +1883,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 34,
           "legend": {
@@ -2016,7 +1967,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 0,
           "id": 35,
           "legend": {
@@ -2097,53 +2048,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    10
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le, instance))",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{instance}}",
-                    "refId": "A",
-                    "step": 20
-                  },
-                  "params": [
-                    "A",
-                    "1m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "Query duration for 99th percentile is high.",
-            "name": "Query Duration 99th percentile alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2174,6 +2083,7 @@
           "targets": [
             {
               "expr": "histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le))",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "average",
               "refId": "B",
@@ -2181,21 +2091,14 @@
             },
             {
               "expr": "histogram_quantile(0.99, sum(rate(tidb_server_handle_query_duration_seconds_bucket[1m])) by (le, instance))",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}",
               "refId": "A",
               "step": 20
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 10
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Query Duration 99th percentile",
@@ -2237,7 +2140,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": null,
           "editable": true,
           "error": false,
@@ -2323,7 +2226,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -2417,7 +2320,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 0,
           "id": 36,
           "legend": {
@@ -2497,7 +2400,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 37,
           "legend": {
@@ -2576,7 +2479,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 38,
           "legend": {
@@ -2654,7 +2557,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 39,
           "legend": {
@@ -2731,7 +2634,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 40,
           "legend": {
@@ -2806,53 +2709,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    0
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "sum(rate(tidb_tikvclient_region_err_total[1m])) by (type, instance)",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{instance}} {{type}}",
-                    "metric": "tidb_server_session_execute_parse_duration_count",
-                    "refId": "A",
-                    "step": 10
-                  },
-                  "params": [
-                    "A",
-                    "1m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "name": "TiDB TiClient Region Error alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 2,
           "fill": 0,
           "id": 41,
@@ -2892,15 +2753,7 @@
               "step": 10
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 0
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "TiClient Region Error",
@@ -2941,7 +2794,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 42,
           "legend": {
@@ -3015,54 +2868,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    1
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "tidb_domain_load_schema_duration_sum / tidb_domain_load_schema_duration_count",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{instance}}",
-                    "metric": "",
-                    "refId": "A",
-                    "step": 10
-                  },
-                  "params": [
-                    "A",
-                    "1m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "Schema lease error.",
-            "name": "Schema Lease Error alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": null,
           "editable": true,
           "error": false,
@@ -3098,6 +2908,7 @@
           "targets": [
             {
               "expr": "tidb_domain_load_schema_duration_sum / tidb_domain_load_schema_duration_count",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}",
               "metric": "",
@@ -3105,15 +2916,7 @@
               "step": 10
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 1
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Load Schema Duration",
@@ -3155,7 +2958,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "fill": 1,
           "id": 43,
           "legend": {
@@ -3238,7 +3041,7 @@
       "titleSize": "h6"
     },
     {
-      "collapse": false,
+      "collapse": true,
       "height": 299,
       "panels": [
         {
@@ -3246,7 +3049,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 0,
@@ -3341,7 +3144,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "editable": true,
           "error": false,
           "fill": 0,
@@ -3422,7 +3225,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 0,
           "id": 44,
@@ -3501,7 +3304,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 0,
           "id": 45,
@@ -3579,54 +3382,11 @@
           ]
         },
         {
-          "alert": {
-            "conditions": [
-              {
-                "evaluator": {
-                  "params": [
-                    0
-                  ],
-                  "type": "gt"
-                },
-                "operator": {
-                  "type": "and"
-                },
-                "query": {
-                  "datasourceId": 1,
-                  "model": {
-                    "expr": "sum(rate(tikv_channel_full_total[1m])) by (job, type)",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{job}} - {{type}}",
-                    "metric": "",
-                    "refId": "A",
-                    "step": 10
-                  },
-                  "params": [
-                    "A",
-                    "1m",
-                    "now"
-                  ]
-                },
-                "reducer": {
-                  "params": [],
-                  "type": "avg"
-                },
-                "type": "query"
-              }
-            ],
-            "executionErrorState": "alerting",
-            "frequency": "60s",
-            "handler": 1,
-            "message": "TiKV channel full",
-            "name": "TiKV channel full alert",
-            "noDataState": "no_data",
-            "notifications": []
-          },
           "aliasColors": {},
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "editable": true,
           "error": false,
@@ -3663,6 +3423,7 @@
           "targets": [
             {
               "expr": "sum(rate(tikv_channel_full_total[1m])) by (job, type)",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{job}} - {{type}}",
               "metric": "",
@@ -3670,15 +3431,7 @@
               "step": 10
             }
           ],
-          "thresholds": [
-            {
-              "colorMode": "critical",
-              "fill": true,
-              "line": true,
-              "op": "gt",
-              "value": 0
-            }
-          ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "channel full",
@@ -3720,7 +3473,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "editable": true,
           "error": false,
@@ -3808,7 +3561,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 1,
           "id": 46,
@@ -3886,7 +3639,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 2,
           "fill": 1,
           "id": 51,
@@ -3966,7 +3719,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 5,
           "fill": 1,
           "id": 47,
@@ -4059,7 +3812,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 5,
           "fill": 1,
           "id": 48,
@@ -4151,7 +3904,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 5,
           "fill": 1,
           "id": 49,
@@ -4244,7 +3997,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 5,
           "fill": 1,
           "id": 50,
@@ -4336,7 +4089,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 0,
           "id": 52,
@@ -4416,7 +4169,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 0,
           "id": 53,
@@ -4496,7 +4249,7 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${DS_TIDB-MASTER}",
+          "datasource": "${DS_TEST-CLUSTER}",
           "decimals": 1,
           "fill": 1,
           "id": 54,
@@ -4587,7 +4340,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_TIDB-MASTER}",
+        "datasource": "${DS_TEST-CLUSTER}",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -4636,6 +4389,6 @@
     ]
   },
   "timezone": "browser",
-  "title": "TiDB Cluster - Overview",
+  "title": "Test-Cluster-Overview",
   "version": 2
 }
