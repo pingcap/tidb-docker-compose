@@ -6,7 +6,7 @@
 {{- define "pd_list" }}
 {{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}:2379{{- end }}
 {{- end }}
-{{- $grafanaImage := .Values.grafana.image | default "grafana/grafana:4.2.0" }}
+{{- $grafanaImage := .Values.grafana.image | default "grafana/grafana:4.6.3" }}
 {{- $grafanaPort := .Values.grafana.port | default "3000" }}
 {{- $prometheusImage := .Values.prometheus.image | default "prom/prometheus:v2.0.0" }}
 {{- $prometheusPort := .Values.prometheus.port | default "9090" }}

@@ -39,7 +39,7 @@ tidbVision:
   port: "8010"
 
 grafana:
-  image: grafana/grafana:4.2.0
+  image: grafana/grafana:4.6.3
   port: "3000"
 
 pushgateway:

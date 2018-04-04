@@ -146,7 +146,7 @@ services:
       - ./data:/data
     restart: on-failure
   grafana:
-    image: grafana/grafana:4.2.0
+    image: grafana/grafana:4.6.3
     ports:
       - "3000:3000"
     restart: on-failure

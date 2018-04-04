@@ -53,12 +53,14 @@ interval = "15s"
 address = "pushgateway:9091"
 
 [schedule]
+max-merge-region-size = 0
 max-snapshot-count = 3
 max-pending-peer-count = 16
 max-store-down-time = "1h"
 leader-schedule-limit = 64
 region-schedule-limit = 16
 replica-schedule-limit = 24
+merge-schedule-limit = 20
 tolerant-size-ratio = 2.5
 
 # customized schedulers, the format is as below
@@ -66,7 +68,6 @@ tolerant-size-ratio = 2.5
 # [[schedule.schedulers]]
 # type = "evict-leader"
 # args = ["1"]
-
 
 [replication]
 # The number of replicas for each region.
@@ -76,3 +77,9 @@ max-replicas = 3
 # For example, ["zone", "rack"] means that we should place replicas to
 # different zones first, then to different racks if we don't have enough zones.
 location-labels = []
+
+[label-property]
+# Do not assign region leaders to stores that have these tags.
+#  [[label-property.reject-leader]]
+#  key = "zone"
+#  value = "cn1
