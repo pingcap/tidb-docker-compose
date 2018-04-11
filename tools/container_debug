@@ -85,7 +85,7 @@ WORKSPACE=$(cd $(dirname $0)/..; pwd)
 DEBUG_IMAGE=${DEBUG_IMAGE:-uhub.service.ucloud.cn/pingcap/tidb-debug:latest}
 SUFFIX=$(uuidgen|cut -d'-' -f1|tr '[A-Z]' '[a-z]')
 DEBUG_CONTAINER_NAME=debug-${SUFFIX}
-TMP_DIR="tmp"
+TMP_FILE=$(mktemp /tmp/binary.XXXXXX)
 ################################################################################
 
 if [[ $# -eq 0 ]]
@@ -93,9 +93,16 @@ then
     print_help
 fi
 
+function cleanup() {
+	notice "start to clean tmp file ${TMP_FILE}"
+	[[ -f ${TMP_FILE} ]] && rm -f ${TMP_FILE}
+}
+
+### register signal processing function
+trap cleanup EXIT
+
 ### change workspace
 cd $WORKSPACE
-[[ ! -d ${TMP_DIR} ]] && mkdir -p ${TMP_DIR}
 
 optstring=":i:s:p:wh"
 
@@ -133,16 +140,16 @@ then
 	### If both -s and -i options are specified, the -i option is preferred
 	cid=${container_id}
 else
-	cids=(`docker-compose ps|awk '{print $1}'|grep "_${service_name}_"`)
-	[[ ${#cids[@]} -eq 0 ]] && fatal "not found docker-compose service ${service_name}, please confirm the correct docker-compose service name" >&2
-	### Only one container in cids array
-	cid=${cids[0]}
+	cprefix=$(basename $(pwd)|tr -Cd '[A-Za-z0-9]'|tr '[A-Z]' '[a-z]')
+	cid="${cprefix}_${service_name}_1"
+	docker ps | grep ${cid} >/dev/null
+	[[ $? -ne 0 ]] && fatal "not found docker-compose service ${service_name}, please confirm the correct docker-compose service name" >&2
 fi
 
 if [[ ! -z ${binary_path} ]]
 then
 	binary_name=$(basename ${binary_path})
-	docker cp ${cid}:${binary_path} ${TMP_DIR}/${binary_name}
+	docker cp ${cid}:${binary_path} ${TMP_FILE}
 	if [[ $? -ne 0 ]]
 	then
 		### not found binary in container, reset variable ${binary_name}
@@ -156,12 +163,14 @@ then
 	### starts a web server for graphic visualizations of golang program profiles
 
 	### generate a random web port
+	### TODO: Test whether this port has been used
 	wport=${RANDOM}
 	[[ ${wport} -lt 10000 ]] && wport=$((wport+10000))
 
 	### get the container exposed port
 	cport=$(docker port ${cid}|grep -E '[0-9]{5}'|awk -F: '{print $NF}')
-	pprof -http=:${wport} ./${TMP_DIR}/${binary_name} http://localhost:${cport}/debug/pprof/profile
+	notice "starts a web server on localhost:${wport}"
+	pprof -http=:${wport} ${TMP_FILE} http://localhost:${cport}/debug/pprof/profile
 else
 	### enter debug container to debug the specified container
 	docker_run_args=(-ti --rm --name=${DEBUG_CONTAINER_NAME})
@@ -170,9 +179,9 @@ else
 	docker_run_args+=(--ipc=container:${cid})
 	docker_run_args+=(--cap-add=SYS_PTRACE)
 	docker_run_args+=(--privileged=true)
-	if [[ ! -z ${binary_name} && -e ${TMP_DIR}/${binary_name} ]]
+	if [[ ! -z ${binary_name} && -e ${TMP_FILE} ]]
 	then
-		docker_run_args+=(-v ${WORKSPACE}/${TMP_DIR}/${binary_name}:/${binary_name})
+		docker_run_args+=(-v ${TMP_FILE}:/${binary_name})
 	else
 		notice "you can access the debugged container ${cid} file system through this path /proc/\${DEBUGGED_PROCESS_PID}/root"
 	fi
