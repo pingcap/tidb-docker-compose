@@ -1,0 +1,190 @@
+#!/bin/bash
+
+# Copyright 2018 PingCAP, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#* --------------------------------------------------------------------- */
+#*                         log configure                                 */
+#* --------------------------------------------------------------------- */
+### Define logging color
+COLOR_ORIGIN="\033[0m"
+COLOR_GREEN="\033[32m"
+COLOR_YELLOW="\033[33m"
+COLOR_RED="\033[31m"
+
+### Define logging level
+LOGGER_LEVEL="3"
+
+### Define common logger
+function logger() {
+   cur_level=$1
+   cur_type=$2
+   cur_color=$3
+   shift && shift && shift
+   cur_msg=$*
+
+   [[ ${LOGGER_LEVEL} -lt ${cur_level} ]] && return 0
+
+   pre_fix="${cur_color}[${cur_type}][$(date +%F)][$(date +%T)]"
+   pos_fix="${COLOR_ORIGIN}"
+   echo -e "${pre_fix} ${cur_msg} ${pos_fix}"
+}
+
+### Define notice logger
+function notice() {
+   logger 3 "NOTICE" ${COLOR_GREEN} $*
+}
+
+### Define warning logger
+function warning() {
+   logger 2 "WARNING" ${COLOR_YELLOW} $*
+}
+
+### Define fatal logger
+function fatal() {
+   logger 1 "FATAL" ${COLOR_RED} $*
+   exit 1
+}
+##########################################################################
+
+function print_help() {
+echo "\
+${1:-Debug tool for container.}
+
+Usage:
+  container_debug [OPTIONS] [ARG]
+
+Options:
+  -i                      The container's identity, possible values are 'containerID' or 'containerName'
+  -s                      The service name defined in docker-compose
+  -w                      Run pprof via a web interface for go program
+  -p                      The binary path of the debugged process in its own container
+  -h                      Print help infomation
+
+When you enter the debug container, you can find the pid of the debugged process through the ps command,
+then you can find the binary of the debugged process through this path /proc/\${pid}/root/\${binary_path}.
+
+\${binary_path} represents the binary path of the debugged process in its own container.
+\${pid} represents the process id of the debugged process as seen in the debug container.
+" >&2
+exit
+}
+
+###############################variable define##################################
+WORKSPACE=$(cd $(dirname $0)/..; pwd)
+DEBUG_IMAGE=${DEBUG_IMAGE:-uhub.service.ucloud.cn/pingcap/tidb-debug:latest}
+SUFFIX=$(uuidgen|cut -d'-' -f1|tr '[A-Z]' '[a-z]')
+DEBUG_CONTAINER_NAME=debug-${SUFFIX}
+TMP_FILE=$(mktemp /tmp/binary.XXXXXX)
+################################################################################
+
+if [[ $# -eq 0 ]]
+then
+    print_help
+fi
+
+function cleanup() {
+	notice "start to clean tmp file ${TMP_FILE}"
+	[[ -f ${TMP_FILE} ]] && rm -f ${TMP_FILE}
+}
+
+### register signal processing function
+trap cleanup EXIT
+
+### change workspace
+cd $WORKSPACE
+
+optstring=":i:s:p:wh"
+
+while getopts "$optstring" opt; do
+	case $opt in
+		i)
+			container_id=${OPTARG}
+			;;
+		s)
+			service_name=${OPTARG}
+			;;
+		p)
+			binary_path=${OPTARG}
+			;;
+		w)
+			web=true
+			;;
+		h)
+			print_help
+			;;
+		\?)
+			fatal "Invalid option: -$OPTARG" >&2
+			;;
+		:)
+			fatal "Option -$OPTARG requires an argument" >&2
+			;;
+	esac
+done
+
+if [[ -z ${service_name} && -z ${container_id} ]]
+then
+	fatal "please use -s or -i options to select the target container" >&2
+elif [[ ! -z ${container_id} ]]
+then
+	### If both -s and -i options are specified, the -i option is preferred
+	cid=${container_id}
+else
+	cprefix=$(basename $(pwd)|tr -Cd '[A-Za-z0-9]'|tr '[A-Z]' '[a-z]')
+	cid="${cprefix}_${service_name}_1"
+	docker ps | grep ${cid} >/dev/null
+	[[ $? -ne 0 ]] && fatal "not found docker-compose service ${service_name}, please confirm the correct docker-compose service name" >&2
+fi
+
+if [[ ! -z ${binary_path} ]]
+then
+	binary_name=$(basename ${binary_path})
+	docker cp ${cid}:${binary_path} ${TMP_FILE}
+	if [[ $? -ne 0 ]]
+	then
+		### not found binary in container, reset variable ${binary_name}
+		binary_name=
+		warning "not found ${binary_path} in container ${cid}, please specify the correct binary path in container" >&2
+	fi
+fi
+
+if [[ ! -z ${web} ]]
+then
+	### starts a web server for graphic visualizations of golang program profiles
+
+	### generate a random web port
+	### TODO: Test whether this port has been used
+	wport=${RANDOM}
+	[[ ${wport} -lt 10000 ]] && wport=$((wport+10000))
+
+	### get the container exposed port
+	cport=$(docker port ${cid}|grep -E '[0-9]{5}'|awk -F: '{print $NF}')
+	notice "starts a web server on localhost:${wport}"
+	pprof -http=:${wport} ${TMP_FILE} http://localhost:${cport}/debug/pprof/profile
+else
+	### enter debug container to debug the specified container
+	docker_run_args=(-ti --rm --name=${DEBUG_CONTAINER_NAME})
+	docker_run_args+=(--pid=container:${cid})
+	docker_run_args+=(--network=container:${cid})
+	docker_run_args+=(--ipc=container:${cid})
+	docker_run_args+=(--cap-add=SYS_PTRACE)
+	docker_run_args+=(--privileged=true)
+	if [[ ! -z ${binary_name} && -e ${TMP_FILE} ]]
+	then
+		docker_run_args+=(-v ${TMP_FILE}:/${binary_name})
+	else
+		notice "you can access the debugged container ${cid} file system through this path /proc/\${DEBUGGED_PROCESS_PID}/root"
+	fi
+	docker_run_args+=($DEBUG_IMAGE)
+	docker run ${docker_run_args[@]}
+fi

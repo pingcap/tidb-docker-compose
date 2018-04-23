@@ -86,16 +86,16 @@ Graphviz: [http://www.graphviz.org/](http://www.graphviz.org/), used to generate
 * debug TiDB or PD instances
 
 ```bash
-# This script contains a parameter, the parameter is the service name of TiDB or PD instances
-$ ./tool/go_debug pd0
+### Use the following command to starts a web server for graphic visualizations of golang program profiles
+$ ./tool/container_debug -s pd0 -p /pd-server -w
 ```
 The above command will produce graphic visualizations of profiles of `pd0` that can be accessed through the browser.
 
 * debug TiKV instances
 
 ```bash
-### step 1: select a tikv instance(here is tikv0) to enter debug container
-$ ./tool/tikv_debug tikv0
+### step 1: select a tikv instance(here is tikv0) and specify the binary path in container to enter debug container
+$ ./tool/container_debug -s tikv0 -p /tikv-server
 
 ### after step 1, we can generate flame graph for tikv0 in debug container
 $ ./run_flamegraph.sh 1  # 1 is the tikv0's process id
