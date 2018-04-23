@@ -1126,7 +1126,7 @@
               "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
-              "legendFormat": "strage size",
+              "legendFormat": "storage size",
               "refId": "A",
               "step": 10
             },
