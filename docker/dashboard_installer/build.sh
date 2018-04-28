@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-VERSION=v1.0.7
-REGISTRY=uhub.ucloud.cn/pingcap
-IMAGE_NAME=tidb-dashboard-installer
+VERSION=${VERSION:-v1.0.7}
+REGISTRY=${REGISTRY:-uhub.ucloud.cn/pingcap}
+IMAGE_NAME=${IMAGE_NAME:-tidb-dashboard-installer}
 MONITOR_TPLS="overview-dashboard.json pd-dashboard.json tidb-dashboard.json tikv-dashboard.json"
 
 ### change workspace
