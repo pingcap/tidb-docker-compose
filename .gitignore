@@ -6,3 +6,7 @@
 /tidb/bin
 /tidb-vision/tidb-vision
 /tmp
+/docker/dashboard_installer/dashboard/overview.json
+/docker/dashboard_installer/dashboard/pd.json
+/docker/dashboard_installer/dashboard/tidb.json
+/docker/dashboard_installer/dashboard/tikv.json
