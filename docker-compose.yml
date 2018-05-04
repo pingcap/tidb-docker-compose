@@ -122,9 +122,7 @@ services:
   tidb-vision:
     image: pingcap/tidb-vision:latest
     environment:
-      # TODO: we use only one pd endpoint
-      # because tidb-vision doesn't support multiple pd endpoint now
-      PD_ENDPOINT: pd0:2379
+      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379
     ports:
       - "8010:8010"
 
