@@ -10,3 +10,4 @@
 /docker/dashboard_installer/dashboard/pd.json
 /docker/dashboard_installer/dashboard/tidb.json
 /docker/dashboard_installer/dashboard/tikv.json
+/.idea

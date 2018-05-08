@@ -2,14 +2,11 @@
     {
         "datasource": "tidb-cluster",
         "name": "TiDB-Cluster",
-        "password": "admin",
         "titles": {
             "overview": "TiDB-Cluster-Overview",
             "pd": "TiDB-Cluster-PD",
             "tidb": "TiDB-Cluster-TiDB",
             "tikv": "TiDB-Cluster-TiKV"
-        },
-        "url": "http://tidb-cluster-grafana:3000/",
-        "user": "admin"
+        }
     }
 ]

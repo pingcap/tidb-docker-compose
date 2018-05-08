@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-VERSION=${VERSION:-v1.0.7}
+VERSION=${VERSION:-v1.0.8}
 REGISTRY=${REGISTRY:-uhub.ucloud.cn/pingcap}
 IMAGE_NAME=${IMAGE_NAME:-tidb-dashboard-installer}
 MONITOR_TPLS="overview-dashboard.json pd-dashboard.json tidb-dashboard.json tikv-dashboard.json"
