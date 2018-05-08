@@ -69,22 +69,6 @@ def fill_dashboard_with_dest_config(dashboard, dest, type_='node'):
             annotation['datasource'] = dest['datasource']
     return dashboard
 
-def import_dashboard(api_url, api_key, dashboard):
-    payload = {'dashboard': dashboard,
-               'overwrite': True}
-    headers = {'Authorization': "Bearer {}".format(api_key),
-               'Content-Type': 'application/json'}
-    req = urllib2.Request(api_url + 'api/dashboards/db',
-                          headers=headers,
-                          data=json.dumps(payload))
-    try:
-        resp = urllib2.urlopen(req)
-        data = json.load(resp)
-        return data
-    except urllib2.HTTPError, error:
-        data = json.load(error)
-        return data
-
 def import_dashboard_via_user_pass(api_url, user, password, dashboard):
     payload = {'dashboard': dashboard,
                'overwrite': True}
@@ -105,6 +89,8 @@ def import_dashboard_via_user_pass(api_url, user, password, dashboard):
 
 if __name__ == '__main__':
     url = sys.argv[1]
+    user = sys.argv[2]
+    password = sys.argv[3]
     print(url)
     for type_ in src['dashboards']:
         print("[load] from <{}>:{}".format(
@@ -116,10 +102,7 @@ if __name__ == '__main__':
             dashboard = fill_dashboard_with_dest_config(dashboard, dest, type_)
             print("[import] as <{}> to [{}]".format(
                 dashboard['title'], dest['name']), end='\t............. ')
-            if 'user' in dest:
-                ret = import_dashboard_via_user_pass(url, dest['user'], dest['password'], dashboard)
-            else:
-                ret = import_dashboard(url, dest['key'], dashboard)
+            ret = import_dashboard_via_user_pass(url, user, password, dashboard)
             print(ret)
 
             if ret['status'] != 'success':
