@@ -69,22 +69,6 @@ def fill_dashboard_with_dest_config(dashboard, dest, type_='node'):
             annotation['datasource'] = dest['datasource']
     return dashboard
 
-def import_dashboard(api_url, api_key, dashboard):
-    payload = {'dashboard': dashboard,
-               'overwrite': True}
-    headers = {'Authorization': "Bearer {}".format(api_key),
-               'Content-Type': 'application/json'}
-    req = urllib2.Request(api_url + 'api/dashboards/db',
-                          headers=headers,
-                          data=json.dumps(payload))
-    try:
-        resp = urllib2.urlopen(req)
-        data = json.load(resp)
-        return data
-    except urllib2.HTTPError, error:
-        data = json.load(error)
-        return data
-
 def import_dashboard_via_user_pass(api_url, user, password, dashboard):
     payload = {'dashboard': dashboard,
                'overwrite': True}
