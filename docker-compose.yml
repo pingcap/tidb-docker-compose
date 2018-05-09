@@ -139,6 +139,8 @@ services:
     command:
       - /opt/spark/sbin/start-slave.sh
       - spark://tispark-master:7077
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
     environment:
       SPARK_WORKER_WEBUI_PORT: 38081
     ports:
@@ -150,7 +152,7 @@ services:
   tidb-vision:
     image: uhub.ucloud.cn/pingcap/tidb-vision:latest
     environment:
-      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379 
+      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379
     ports:
       - "8010:8010"
 
@@ -186,4 +188,3 @@ services:
       - ./config/tidb-dashboard.json:/tidb.json:ro
       - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
-

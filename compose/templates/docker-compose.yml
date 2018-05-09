@@ -157,6 +157,8 @@ services:
     command:
       - /opt/spark/sbin/start-slave.sh
       - spark://tispark-master:7077
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
     environment:
       SPARK_WORKER_WEBUI_PORT: {{ add $.Values.tispark.workerWebUIPort . }}
     ports:
