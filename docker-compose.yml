@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   pd0:
-    image: pingcap/pd:latest
+    image: uhub.ucloud.cn/pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -19,7 +19,7 @@ services:
       - --config=/pd.toml
     restart: on-failure
   pd1:
-    image: pingcap/pd:latest
+    image: uhub.ucloud.cn/pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -36,7 +36,7 @@ services:
       - --config=/pd.toml
     restart: on-failure
   pd2:
-    image: pingcap/pd:latest
+    image: uhub.ucloud.cn/pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -52,9 +52,8 @@ services:
       - --data-dir=/data/pd2
       - --config=/pd.toml
     restart: on-failure
-
   tikv0:
-    image: pingcap/tikv:latest
+    image: uhub.ucloud.cn/pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -70,7 +69,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv1:
-    image: pingcap/tikv:latest
+    image: uhub.ucloud.cn/pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -86,7 +85,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv2:
-    image: pingcap/tikv:latest
+    image: uhub.ucloud.cn/pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -103,7 +102,7 @@ services:
     restart: on-failure
 
   tidb:
-    image: pingcap/tidb:latest
+    image: uhub.ucloud.cn/pingcap/tidb:latest
     ports:
       - "4000:4000"
       - "10080:10080"
@@ -118,21 +117,50 @@ services:
       - "tikv1"
       - "tikv2"
     restart: on-failure
+  tispark-master:
+    image: pingcap/tispark:latest
+    command:
+      - /opt/spark/sbin/start-master.sh
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    environment:
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    depends_on:
+      - "tikv0"
+      - "tikv1"
+      - "tikv2"
+    restart: on-failure
+  tispark-slave0:
+    image: pingcap/tispark:latest
+    command:
+      - /opt/spark/sbin/start-slave.sh
+      - spark://tispark-master:7077
+    environment:
+      SPARK_WORKER_WEBUI_PORT: 38081
+    ports:
+      - "38081:38081"
+    depends_on:
+      - tispark-master
+    restart: on-failure
 
   tidb-vision:
-    image: pingcap/tidb-vision:latest
+    image: uhub.ucloud.cn/pingcap/tidb-vision:latest
     environment:
-      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379
+      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379 
     ports:
       - "8010:8010"
 
   # monitors
   pushgateway:
-    image: prom/pushgateway:v0.3.1
+    image: uhub.ucloud.cn/pingcap/pushgateway:v0.3.1
     restart: on-failure
   prometheus:
     user: root
-    image: prom/prometheus:v2.0.0
+    image: uhub.ucloud.cn/pingcap/prometheus:v2.0.0
     command:
       - --storage.tsdb.path=/data/prometheus
       - --config.file=/etc/prometheus/prometheus.yml
@@ -144,12 +172,12 @@ services:
       - ./data:/data
     restart: on-failure
   grafana:
-    image: grafana/grafana:4.6.3
+    image: uhub.ucloud.cn/pingcap/grafana:4.6.3
     ports:
       - "3000:3000"
     restart: on-failure
   dashboard-installer:
-    image: pingcap/tidb-dashboard-installer:v1.0.0
+    image: uhub.ucloud.cn/pingcap/tidb-dashboard-installer:v1.0.0
     command: ["grafana:3000"]
     volumes:
       - ./config/grafana-datasource.json:/datasource.json:ro
@@ -158,3 +186,4 @@ services:
       - ./config/tidb-dashboard.json:/tidb.json:ro
       - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
+

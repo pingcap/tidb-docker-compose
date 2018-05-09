@@ -2,7 +2,7 @@ data_dir: ./data
 
 pd:
   size: 3
-  image: pingcap/pd:latest
+  image: uhub.ucloud.cn/pingcap/pd:latest
 
   # If you want to build pd image from source, leave image empty and specify pd source directory
   # and its dockerfile name
@@ -11,7 +11,7 @@ pd:
 
 tikv:
   size: 3
-  image: pingcap/tikv:latest
+  image: uhub.ucloud.cn/pingcap/tikv:latest
 
   # If you want to build tikv image from source, leave image empty and specify tikv source directory
   # and its dockerfile name
@@ -19,7 +19,7 @@ tikv:
   # dockerfile: Dockerfile
 
 tidb:
-  image: pingcap/tidb:latest
+  image: uhub.ucloud.cn/pingcap/tidb:latest
 
   # If you want to build tidb image from source, leave image empty and specify tidb source directory
   # and its dockerfile name
@@ -28,9 +28,25 @@ tidb:
   mysqlPort: "4000"
   statusPort: "10080"
 
+tispark:
+  image: pingcap/tispark:latest
+
+  # If you want to build tidb image from source, leave image empty and specify tidb source directory
+  # and its dockerfile name
+  # buildPath: ./tidb
+  # dockerfile: Dockerfile
+  buildPath: ./tispark
+  dockerfile: Dockerfile
+
+  masterPort: 7077
+  webuiPort: 8080
+  workerCount: 1
+  # slave web ui port will be workerWebUIPort ~ workerWebUIPort+workerCount-1
+  workerWebUIPort: 38081
+
 # comment this out to disable tidb-vision
 tidbVision:
-  image: pingcap/tidb-vision:latest
+  image: uhub.ucloud.cn/pingcap/tidb-vision:latest
 
   # If you want to build tidb-vision image from source, leave image empty and specify tidb-vision source directory
   # and its dockerfile name
@@ -39,17 +55,17 @@ tidbVision:
   port: "8010"
 
 grafana:
-  image: grafana/grafana:4.6.3
+  image: uhub.ucloud.cn/pingcap/grafana:4.6.3
   port: "3000"
 
 pushgateway:
-  image: prom/pushgateway:v0.3.1
+  image: uhub.ucloud.cn/pingcap/pushgateway:v0.3.1
 
 prometheus:
-  image: prom/prometheus:v2.0.0
+  image: uhub.ucloud.cn/pingcap/prometheus:v2.0.0
   port: "9090"
 
 # This is used to import tidb monitor dashboard templates to grafana
 # this container runs only once and keep running until templates imported successfully
 dashboardInstaller:
-  image: pingcap/tidb-dashboard-installer:v1.0.0
+  image: uhub.ucloud.cn/pingcap/tidb-dashboard-installer:v1.0.0
