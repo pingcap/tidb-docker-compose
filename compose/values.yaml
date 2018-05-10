@@ -5,24 +5,20 @@ networkMode: host
 pd:
   size: 3
   image: uhub.ucloud.cn/pingcap/pd:latest
-
   # If you want to build pd image from source, leave image empty and specify pd source directory
   # and its dockerfile name
   # buildPath: ./pd
   # dockerfile: Dockerfile
-
   # when network_mode is host, pd port ranges [port, port+size)
   port: 2379
 
 tikv:
   size: 3
   image: uhub.ucloud.cn/pingcap/tikv:latest
-
   # If you want to build tikv image from source, leave image empty and specify tikv source directory
   # and its dockerfile name
   # buildPath: ./tikv
   # dockerfile: Dockerfile
-
   # when network mode is host, tikv port ranges [port, port+size)
   port: 20160
 
@@ -30,7 +26,6 @@ tikv:
 # when using TiKV directly, networkMode must be set to `host`
 tidb:
   image: uhub.ucloud.cn/pingcap/tidb:latest
-
   # If you want to build tidb image from source, leave image empty and specify tidb source directory
   # and its dockerfile name
   # buildPath: ./tidb
@@ -41,13 +36,13 @@ tidb:
 # comment this out to disable tidb-vision
 tidbVision:
   image: pingcap/tidb-vision:latest
-
   # If you want to build tidb-vision image from source, leave image empty and specify tidb-vision source directory
   # and its dockerfile name
   # buildPath: ./tidb-vision
   # dockerfile: Dockerfile
   port: "8010"
 
+# comment following monitor components sections out to disable monitor
 grafana:
   image: uhub.ucloud.cn/pingcap/grafana:4.6.3
   port: "3000"

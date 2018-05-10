@@ -3,12 +3,34 @@
 {{- $pdPort := .Values.pd.port | int }}
 {{- $pdPeerPort := add $pdPort 10000 }}
 {{- $tikvPort := .Values.tikv.port | int }}
+
 {{- define "initial_cluster" }}
-{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}=http://{{if eq $.Values.networkMode "host"}}127.0.0.1:{{add (add ($.Values.pd.port | int) 10000) .}}{{else}}pd{{.}}:2380{{end}}{{- end }}
-{{- end }}
+  {{- range until (.Values.pd.size | int) }}
+    {{- if . -}}
+      ,
+    {{- end -}}
+    pd{{ . }}=http://
+    {{- if eq $.Values.networkMode "host" -}}
+      127.0.0.1:{{add (add ($.Values.pd.port | int) 10000) . }}
+    {{- else -}}
+      pd{{ . }}:2380
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- define "pd_list" }}
-{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}{{if eq $.Values.networkMode "host"}}127.0.0.1:{{add ($.Values.pd.port | int) .}}{{else}}pd{{.}}:2379{{end}}{{- end }}
-{{- end }}
+  {{- range until (.Values.pd.size | int) }}
+    {{- if . -}}
+      ,
+    {{- end -}}
+    {{- if eq $.Values.networkMode "host" -}}
+      127.0.0.1:{{ add ($.Values.pd.port | int) . }}
+    {{- else -}}
+      pd{{ . }}:2379
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 version: '2.1'
 
 services:
@@ -54,7 +76,7 @@ services:
     #     soft: 1000000
     #     hard: 1000000
     restart: on-failure
-  {{- end }}
+  {{ end }}
 
   {{- range until $tikvSize }}
   tikv{{ . }}:
@@ -94,7 +116,7 @@ services:
     #     soft: 1000000
     #     hard: 1000000
     restart: on-failure
-  {{- end }}
+  {{ end }}
 
   {{- if .Values.tidb }}
   tidb:
@@ -130,7 +152,7 @@ services:
     #     soft: 1000000
     #     hard: 1000000
     restart: on-failure
-  {{- end }}
+  {{ end }}
 
   {{- if .Values.tidbVision }}
   tidb-vision:
@@ -151,9 +173,11 @@ services:
     ports:
       - "{{ .Values.tidbVision.port }}:8010"
     {{- end }}
+    restart: on-failure
   {{- end }}
 
   # monitors
+  {{- if .Values.prometheus }}
   pushgateway:
     image: {{ .Values.pushgateway.image }}
     {{- if eq .Values.networkMode "host" }}
@@ -163,7 +187,6 @@ services:
     {{- end }}
     restart: on-failure
 
-  {{- if .Values.prometheus }}
   prometheus:
     user: root
     image: {{ .Values.prometheus.image }}
@@ -210,4 +233,4 @@ services:
       - ./config/tidb-dashboard.json:/tidb.json:ro
       - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
-  {{- end }}
+  {{- end -}}
