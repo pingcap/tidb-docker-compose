@@ -76,6 +76,14 @@ You can build docker image yourself for development test.
 
 [tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
 
+#### Host network mode
+
+When using TiKV directly without TiDB, host network mode must be enabled. This way all services use host network without isolation. So you can access all services on the host machine.
+
+You can enable this mode by setting `networkMode: host` in compose/values.yaml and regenerate docker-compose.yml. When in this mode, all metrics address in pd/tikv/tidb configuration files must be set to `127.0.0.1:9091` and `"url": "http://127.0.0.1:9090"` in config/grafana-datasource.json
+
+After all the above is done, you can start tidb-cluster as usual by `docker-compose -f generated-docker-compose.yml up -d`
+
 ### Debug TiDB/TiKV/PD instances
 Prerequisites:
 

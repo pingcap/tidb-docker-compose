@@ -1,17 +1,14 @@
 {{- $pdSize := .Values.pd.size | int }}
 {{- $tikvSize := .Values.tikv.size | int }}
+{{- $pdPort := .Values.pd.port | int }}
+{{- $pdPeerPort := add $pdPort 10000 }}
+{{- $tikvPort := .Values.tikv.port | int }}
 {{- define "initial_cluster" }}
-{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}=http://pd{{.}}:2380{{- end }}
+{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}=http://{{if eq $.Values.networkMode "host"}}127.0.0.1:{{add (add ($.Values.pd.port | int) 10000) .}}{{else}}pd{{.}}:2380{{end}}{{- end }}
 {{- end }}
 {{- define "pd_list" }}
-{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}pd{{.}}:2379{{- end }}
+{{- range until (.Values.pd.size | int) }}{{if .}},{{end}}{{if eq $.Values.networkMode "host"}}127.0.0.1:{{add ($.Values.pd.port | int) .}}{{else}}pd{{.}}:2379{{end}}{{- end }}
 {{- end }}
-{{- $grafanaImage := .Values.grafana.image | default "grafana/grafana:4.6.3" }}
-{{- $grafanaPort := .Values.grafana.port | default "3000" }}
-{{- $prometheusImage := .Values.prometheus.image | default "prom/prometheus:v2.0.0" }}
-{{- $prometheusPort := .Values.prometheus.port | default "9090" }}
-{{- $pushgatewayImage := .Values.pushgateway.image | default "prom/pushgateway:v0.3.1" }}
-{{- $dashboardInstallerImage := .Values.dashboardInstaller.image | default "pingcap/tidb-dashboard-installer:v1.0.0" }}
 version: '2.1'
 
 services:
@@ -25,17 +22,28 @@ services:
       context: {{ $.Values.pd.buildPath | default "./pd" }}
       dockerfile: {{ $.Values.pd.dockerfile | default "Dockerfile" }}
     {{- end }}
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- else }}
     ports:
       - "2379"
+    {{- end }}
     volumes:
       - ./config/pd.toml:/pd.toml:ro
-      - {{ $.Values.data_dir }}:/data
+      - {{ $.Values.dataDir }}:/data
     command:
       - --name=pd{{ . }}
+      {{- if eq $.Values.networkMode "host" }}
+      - --client-urls=http://0.0.0.0:{{ add $pdPort . }}
+      - --peer-urls=http://0.0.0.0:{{ add $pdPeerPort . }}
+      - --advertise-client-urls=http://127.0.0.1:{{ add $pdPort . }}
+      - --advertise-peer-urls=http://127.0.0.1:{{ add $pdPeerPort . }}
+      {{- else }}
       - --client-urls=http://0.0.0.0:2379
       - --peer-urls=http://0.0.0.0:2380
       - --advertise-client-urls=http://pd{{ . }}:2379
       - --advertise-peer-urls=http://pd{{ . }}:2380
+      {{- end }}
       - --initial-cluster={{- template "initial_cluster" $ }}
       - --data-dir=/data/pd{{ . }}
       - --config=/pd.toml
@@ -58,12 +66,20 @@ services:
       context: {{ $.Values.tikv.buildPath | default "./tikv" }}
       dockerfile: {{ $.Values.tikv.dockerfile | default "Dockerfile" }}
     {{- end }}
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- end }}
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
-      - {{ $.Values.data_dir }}:/data
+      - {{ $.Values.dataDir }}:/data
     command:
+      {{- if eq $.Values.networkMode "host" }}
+      - --addr=0.0.0.0:{{ add $tikvPort . }}
+      - --advertise-addr=127.0.0.1:{{ add $tikvPort . }}
+      {{- else }}
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv{{ . }}:20160
+      {{- end }}
       - --data-dir=/data/tikv{{ . }}
       - --pd={{- template "pd_list" $ }}
       - --config=/tikv.toml
@@ -80,6 +96,7 @@ services:
     restart: on-failure
   {{- end }}
 
+  {{- if .Values.tidb }}
   tidb:
     {{- if .Values.tidb.image }}
     image: {{ .Values.tidb.image }}
@@ -89,17 +106,13 @@ services:
       context: {{ .Values.tidb.buildPath | default "./tidb" }}
       dockerfile: {{ .Values.tidb.dockerfile | default "Dockerfile" }}
     {{- end }}
+    {{- if eq .Values.networkMode "host" }}
+    network_mode: host
+    {{- else }}
     ports:
-      {{- if .Values.tidb.mysqlPort }}
       - "{{ .Values.tidb.mysqlPort }}:4000"
-      {{- else }}
-      - "4000"
-      {{- end }}
-      {{- if .Values.tidb.statusPort }}
       - "{{ .Values.tidb.statusPort }}:10080"
-      {{- else }}
-      - "4000"
-      {{- end }}
+    {{- end }}
     volumes:
       - ./config/tidb.toml:/tidb.toml:ro
     command:
@@ -117,8 +130,9 @@ services:
     #     soft: 1000000
     #     hard: 1000000
     restart: on-failure
+  {{- end }}
 
-{{- if .Values.tidbVision }}
+  {{- if .Values.tidbVision }}
   tidb-vision:
     {{- if .Values.tidbVision.image }}
     image: {{ .Values.tidbVision.image }}
@@ -129,50 +143,66 @@ services:
       dockerfile: {{ .Values.tidbVision.dockerfile | default "Dockerfile" }}
     {{- end }}
     environment:
-      # TODO: we use only one pd endpoint
-      # because tidb-vision doesn't support multiple pd endpoint now
-      PD_ENDPOINT: pd0:2379
+      PD_ENDPOINT: {{if eq .Values.networkMode "host"}}127.0.0.1:{{.Values.pd.port}}{{else}}pd0:2379{{end}}
+    {{- if eq .Values.networkMode "host" }}
+      PORT: {{ .Values.tidbVision.port }}
+    network_mode: host
+    {{- else }}
     ports:
-      {{- if .Values.tidbVision.port }}
       - "{{ .Values.tidbVision.port }}:8010"
-      {{- else }}
-      - "8010"
-      {{- end }}
-{{- end }}
+    {{- end }}
+  {{- end }}
 
   # monitors
   pushgateway:
-    image: {{ $pushgatewayImage }}
+    image: {{ .Values.pushgateway.image }}
+    {{- if eq .Values.networkMode "host" }}
+    command:
+      - --web.listen-address=0.0.0.0:{{.Values.pushgateway.port}}
+    network_mode: host
+    {{- end }}
     restart: on-failure
+
+  {{- if .Values.prometheus }}
   prometheus:
     user: root
-    image: {{ $prometheusImage }}
+    image: {{ .Values.prometheus.image }}
     command:
       - --storage.tsdb.path=/data/prometheus
       - --config.file=/etc/prometheus/prometheus.yml
+    {{- if eq .Values.networkMode "host" }}
+      - --web.listen-address=0.0.0.0:{{.Values.prometheus.port}}
+    network_mode: host
+    {{- else }}
     ports:
-      {{- if $prometheusPort }}
-      - "{{ $prometheusPort }}:9090"
-      {{- else }}
-      - "9090"
-      {{- end }}
+      - "{{ .Values.prometheus.port }}:9090"
+    {{- end }}
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
-      - {{ .Values.data_dir }}:/data
+      - {{ .Values.dataDir }}:/data
     restart: on-failure
+  {{- end }}
+
+  {{- if .Values.grafana }}
   grafana:
-    image: {{ $grafanaImage }}
+    image: {{ .Values.grafana.image }}
+    {{- if eq .Values.networkMode "host" }}
+    network_mode: host
+    environment:
+      GF_SERVER_HTTP_PORT: {{ .Values.grafana.port }}
+    {{- else }}
     ports:
-      {{- if $grafanaPort }}
-      - "{{ $grafanaPort }}:3000"
-      {{- else }}
-      - "3000"
-      {{- end }}
+      - "{{ .Values.grafana.port }}:3000"
+    {{- end }}
     restart: on-failure
   dashboard-installer:
-    image: {{ $dashboardInstallerImage }}
+    image: {{ .Values.dashboardInstaller.image }}
+    {{- if eq .Values.networkMode "host" }}
+    command: ["127.0.0.1:{{.Values.grafana.port}}"]
+    {{- else }}
     command: ["grafana:3000"]
+    {{- end }}
     volumes:
       - ./config/grafana-datasource.json:/datasource.json:ro
       - ./config/pd-dashboard.json:/pd.json:ro
@@ -180,3 +210,4 @@ services:
       - ./config/tidb-dashboard.json:/tidb.json:ro
       - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
+  {{- end }}
