@@ -222,6 +222,7 @@ services:
   dashboard-installer:
     image: {{ .Values.dashboardInstaller.image }}
     {{- if eq .Values.networkMode "host" }}
+    network_mode: host
     command: ["127.0.0.1:{{.Values.grafana.port}}"]
     {{- else }}
     command: ["grafana:3000"]
