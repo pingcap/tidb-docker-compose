@@ -80,7 +80,14 @@ You can build docker image yourself for development test.
 
 When using TiKV directly without TiDB, host network mode must be enabled. This way all services use host network without isolation. So you can access all services on the host machine.
 
-You can enable this mode by setting `networkMode: host` in compose/values.yaml and regenerate docker-compose.yml. When in this mode, all metrics address in pd/tikv/tidb configuration files must be set to `127.0.0.1:9091` and `"url": "http://127.0.0.1:9090"` in config/grafana-datasource.json
+You can enable this mode by setting `networkMode: host` in compose/values.yaml and regenerate docker-compose.yml. When in this mode, prometheus address in configuration files should be changed from `prometheus:9090` to `127.0.0.1:9090`, and pushgateway address should be changed from `pushgateway:9091` to `127.0.0.1:9091`.
+
+These modification can be done by:
+```bash
+# Note: this only needed when networkMode is `host`
+sed -i 's/pushgateway:9091/127.0.0.1:9091/g' config/*
+sed -i 's/prometheus:9090/127.0.0.1:9090/g' config/*
+```
 
 After all the above is done, you can start tidb-cluster as usual by `docker-compose -f generated-docker-compose.yml up -d`
 
