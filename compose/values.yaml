@@ -1,10 +1,10 @@
 dataDir: ./data
 # supported networkMode: bridge | host
-networkMode: host
+networkMode: bridge
 
 pd:
   size: 3
-  image: uhub.ucloud.cn/pingcap/pd:latest
+  image: pingcap/pd:latest
   # If you want to build pd image from source, leave image empty and specify pd source directory
   # and its dockerfile name
   # buildPath: ./pd
@@ -14,7 +14,7 @@ pd:
 
 tikv:
   size: 3
-  image: uhub.ucloud.cn/pingcap/tikv:latest
+  image: pingcap/tikv:latest
   # If you want to build tikv image from source, leave image empty and specify tikv source directory
   # and its dockerfile name
   # buildPath: ./tikv
@@ -25,7 +25,7 @@ tikv:
 # comment this section out if you don't need SQL layer and want to use TiKV directly
 # when using TiKV directly, networkMode must be set to `host`
 tidb:
-  image: uhub.ucloud.cn/pingcap/tidb:latest
+  image: pingcap/tidb:latest
   # If you want to build tidb image from source, leave image empty and specify tidb source directory
   # and its dockerfile name
   # buildPath: ./tidb
@@ -44,18 +44,18 @@ tidbVision:
 
 # comment following monitor components sections out to disable monitor
 grafana:
-  image: uhub.ucloud.cn/pingcap/grafana:4.6.3
+  image: grafana/grafana:4.6.3
   port: "3000"
 
 pushgateway:
-  image: uhub.ucloud.cn/pingcap/pushgateway:v0.3.1
+  image: prom/pushgateway:v0.3.1
   port: "9091"
 
 prometheus:
-  image: uhub.ucloud.cn/pingcap/prometheus:v2.0.0
+  image: prom/prometheus:v2.0.0
   port: "9090"
 
 # This is used to import tidb monitor dashboard templates to grafana
 # this container runs only once and keep running until templates imported successfully
 dashboardInstaller:
-  image: uhub.ucloud.cn/pingcap/tidb-dashboard-installer:v1.0.0
+  image: pingcap/tidb-dashboard-installer:v1.0.0
