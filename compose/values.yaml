@@ -1,5 +1,6 @@
 dataDir: ./data
 # supported networkMode: bridge | host
+# host network mode is useless on Mac
 networkMode: bridge
 
 pd:

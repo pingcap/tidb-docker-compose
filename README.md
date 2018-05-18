@@ -76,7 +76,9 @@ You can build docker image yourself for development test.
 
 [tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
 
-#### Host network mode
+#### Host network mode (Linux)
+
+*Note:* Docker for Mac uses a Linux virtual machine, host network mode will not expose any services to host machine. So it's useless to use this mode.
 
 When using TiKV directly without TiDB, host network mode must be enabled. This way all services use host network without isolation. So you can access all services on the host machine.
 
