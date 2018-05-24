@@ -19,6 +19,8 @@ Default user/password: admin/admin
 
 * Access [tidb-vision](https://github.com/pingcap/tidb-vision) at http://localhost:8010
 
+* Access Spark Web UI at http://localhost:8080
+  and access [TiSpark](https://github.com/pingcap/tispark) through spark://127.0.0.1:7077
 
 ## Customize TiDB Cluster
 
@@ -75,6 +77,8 @@ You can build docker image yourself for development test.
   *Note:* Compiling tikv from source consumes lots of memory, memory of Docker for Mac needs to be adjusted to greater than 6GB
 
 [tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
+
+[TiSpark](https://github.com/pingcap/tispark) is a thin layer built for running Apache Spark on top of TiDB/TiKV to answer the complex OLAP queries.
 
 #### Host network mode (Linux)
 

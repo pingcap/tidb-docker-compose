@@ -3,7 +3,7 @@
 {{- $pdPort := .Values.pd.port | int }}
 {{- $pdPeerPort := add $pdPort 10000 }}
 {{- $tikvPort := .Values.tikv.port | int }}
-
+{{- $tisparkWorkerCount := .Values.tispark.workerCount | int }}
 {{- define "initial_cluster" }}
   {{- range until (.Values.pd.size | int) }}
     {{- if . -}}
@@ -152,6 +152,56 @@ services:
     #     soft: 1000000
     #     hard: 1000000
     restart: on-failure
+  {{ end }}
+
+  {{- if .Values.tispark }}
+  tispark-master:
+    {{- if .Values.tispark.image }}
+    image: {{ .Values.tispark.image }}
+    {{- else }}
+    image: tispark:latest
+    build:
+      context: {{ .Values.tispark.buildPath | default "./tispark" }}
+      dockerfile: {{ .Values.tispark.dockerfile | default "Dockerfile" }}
+    {{- end }}
+    command:
+      - /opt/spark/sbin/start-master.sh
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    environment:
+      SPARK_MASTER_PORT: {{ .Values.tispark.masterPort }}
+      SPARK_MASTER_WEBUI_PORT: {{ .Values.tispark.webuiPort }}
+    ports:
+      - "{{ .Values.tispark.masterPort }}:7077"
+      - "{{ .Values.tispark.webuiPort }}:8080"
+    depends_on:
+      {{- range until $tikvSize }}
+      - "tikv{{.}}"
+      {{- end }}
+    restart: on-failure
+  {{- range until $tisparkWorkerCount }}
+  tispark-slave{{ . }}:
+    {{- if $.Values.tispark.image }}
+    image: {{ $.Values.tispark.image }}
+    {{- else }}
+    image: tispark:latest
+    build:
+      context: {{ $.Values.tispark.buildPath | default "./tispark" }}
+      dockerfile: {{ $.Values.tispark.dockerfile | default "Dockerfile" }}
+    {{- end }}
+    command:
+      - /opt/spark/sbin/start-slave.sh
+      - spark://tispark-master:7077
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    environment:
+      SPARK_WORKER_WEBUI_PORT: {{ add $.Values.tispark.workerWebUIPort . }}
+    ports:
+      - "{{ add $.Values.tispark.workerWebUIPort . }}:{{ add $.Values.tispark.workerWebUIPort . }}"
+    depends_on:
+      - tispark-master
+    restart: on-failure
+  {{- end }}
   {{ end }}
 
   {{- if .Values.tidbVision }}
