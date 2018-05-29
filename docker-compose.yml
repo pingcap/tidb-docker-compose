@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   pd0:
-    image: uhub.ucloud.cn/pingcap/pd:latest
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -19,7 +19,7 @@ services:
       - --config=/pd.toml
     restart: on-failure
   pd1:
-    image: uhub.ucloud.cn/pingcap/pd:latest
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -36,7 +36,7 @@ services:
       - --config=/pd.toml
     restart: on-failure
   pd2:
-    image: uhub.ucloud.cn/pingcap/pd:latest
+    image: pingcap/pd:latest
     ports:
       - "2379"
     volumes:
@@ -53,7 +53,7 @@ services:
       - --config=/pd.toml
     restart: on-failure
   tikv0:
-    image: uhub.ucloud.cn/pingcap/tikv:latest
+    image: pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -69,7 +69,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv1:
-    image: uhub.ucloud.cn/pingcap/tikv:latest
+    image: pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -85,7 +85,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv2:
-    image: uhub.ucloud.cn/pingcap/tikv:latest
+    image: pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -102,7 +102,7 @@ services:
     restart: on-failure
 
   tidb:
-    image: uhub.ucloud.cn/pingcap/tidb:latest
+    image: pingcap/tidb:latest
     ports:
       - "4000:4000"
       - "10080:10080"
@@ -150,19 +150,19 @@ services:
     restart: on-failure
 
   tidb-vision:
-    image: uhub.ucloud.cn/pingcap/tidb-vision:latest
+    image: pingcap/tidb-vision:latest
     environment:
-      PD_ENDPOINT: pd0:2379 pd1:2379 pd2:2379
+      PD_ENDPOINT: pd0:2379
     ports:
       - "8010:8010"
 
   # monitors
   pushgateway:
-    image: uhub.ucloud.cn/pingcap/pushgateway:v0.3.1
+    image: prom/pushgateway:v0.3.1
     restart: on-failure
   prometheus:
     user: root
-    image: uhub.ucloud.cn/pingcap/prometheus:v2.0.0
+    image: prom/prometheus:v2.0.0
     command:
       - --storage.tsdb.path=/data/prometheus
       - --config.file=/etc/prometheus/prometheus.yml
@@ -174,12 +174,12 @@ services:
       - ./data:/data
     restart: on-failure
   grafana:
-    image: uhub.ucloud.cn/pingcap/grafana:4.6.3
+    image: grafana/grafana:4.6.3
     ports:
       - "3000:3000"
     restart: on-failure
   dashboard-installer:
-    image: uhub.ucloud.cn/pingcap/tidb-dashboard-installer:v1.0.0
+    image: pingcap/tidb-dashboard-installer:v1.0.0
     command: ["grafana:3000"]
     volumes:
       - ./config/grafana-datasource.json:/datasource.json:ro
