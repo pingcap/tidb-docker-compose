@@ -136,3 +136,36 @@ $ mysql -h 127.0.0.1 -P 4000 -u root
 And Grafana uses port 3000 by default, so open your browser at http://localhost:3000 to view monitor dashboard
 
 If you enabled tidb-vision, you can view it at http://localhost:8010
+
+### Access Spark shell and load TiSpark
+
+```bash
+$ docker-compose exec tispark-master /opt/spark/bin/spark-shell
+...
+Spark context available as 'sc' (master = local[*], app id = local-1527045927617).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.1.1
+      /_/
+
+Using Scala version 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_172)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import org.apache.spark.sql.TiContext
+...
+scala> val ti = new TiContext(spark)
+...
+scala> ti.tidbMapDatabase("test");
+...
+scala> spark.sql("show tables").show
++--------+---------+-----------+
+|database|tableName|isTemporary|
++--------+---------+-----------+
+|        |       t1|       true|
++--------+---------+-----------+
+
+```
