@@ -123,7 +123,7 @@ If you enabled tidb-vision, you can view it at http://localhost:8010
 ### Access Spark shell and load TiSpark
 
 ```bash
-$ docker-compose exec tispark-master  /opt/spark-2.1.1-bin-hadoop2.7/bin/spark-shell
+$ docker-compose exec tispark-master /opt/spark/bin/spark-shell
 ...
 Spark context available as 'sc' (master = local[*], app id = local-1527045927617).
 Spark session available as 'spark'.
@@ -133,7 +133,7 @@ Welcome to
     _\ \/ _ \/ _ `/ __/  '_/
    /___/ .__/\_,_/_/ /_/\_\   version 2.1.1
       /_/
-         
+
 Using Scala version 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_172)
 Type in expressions to have them evaluated.
 Type :help for more information.
@@ -152,4 +152,3 @@ scala> spark.sql("show tables").show
 +--------+---------+-----------+
 
 ```
-
