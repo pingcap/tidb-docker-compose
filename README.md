@@ -9,7 +9,7 @@
 
 ```bash
 $ git clone https://github.com/pingcap/tidb-docker-compose.git
-$ cd tidb-docker-compose && docker-compose pull # This ensures always running the latest docker images
+$ cd tidb-docker-compose && docker-compose pull # Get the latest Docker images
 $ docker-compose up -d
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
@@ -56,7 +56,7 @@ $ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose
 $ vi compose/values.yaml # custom cluster size, docker image, port mapping etc
 $ helm template compose > generated-docker-compose.yaml
-$ docker-compose -f generated-docker-compose.yaml pull
+$ docker-compose -f generated-docker-compose.yaml pull # Get the latest Docker images
 $ docker-compose -f generated-docker-compose.yaml up -d
 ```
 
