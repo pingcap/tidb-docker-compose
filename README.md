@@ -141,7 +141,7 @@ If you enabled tidb-vision, you can view it at http://localhost:8010
 
 ### Access Spark shell and load TiSpark
 
-Insert some sample data to TiDB cluster:
+Insert some sample data to the TiDB cluster:
 
 ```bash
 $ docker-compose exec tispark-master bash
@@ -149,7 +149,7 @@ $ cd /opt/spark/data/tispark-sample-data
 $ mysql -h tidb -P 4000 -u root < dss.ddl
 ```
 
-After the sample data is loaded into TiDB cluster, you can access Spark Shell by `docker-compose exec tispark-master /opt/spark/bin/spark-shell`
+After the sample data is loaded into the TiDB cluster, you can access Spark Shell by `docker-compose exec tispark-master /opt/spark/bin/spark-shell`.
 
 ```bash
 $ docker-compose exec tispark-master /opt/spark/bin/spark-shell
