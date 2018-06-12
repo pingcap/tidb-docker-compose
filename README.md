@@ -9,7 +9,8 @@
 
 ```bash
 $ git clone https://github.com/pingcap/tidb-docker-compose.git
-$ cd tidb-docker-compose && docker-compose up -d
+$ cd tidb-docker-compose && docker-compose pull # Get the latest Docker images
+$ docker-compose up -d
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
 
@@ -55,6 +56,7 @@ $ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose
 $ vi compose/values.yaml # custom cluster size, docker image, port mapping etc
 $ helm template compose > generated-docker-compose.yaml
+$ docker-compose -f generated-docker-compose.yaml pull # Get the latest Docker images
 $ docker-compose -f generated-docker-compose.yaml up -d
 ```
 
@@ -139,6 +141,16 @@ If you enabled tidb-vision, you can view it at http://localhost:8010
 
 ### Access Spark shell and load TiSpark
 
+Insert some sample data to the TiDB cluster:
+
+```bash
+$ docker-compose exec tispark-master bash
+$ cd /opt/spark/data/tispark-sample-data
+$ mysql -h tidb -P 4000 -u root < dss.ddl
+```
+
+After the sample data is loaded into the TiDB cluster, you can access Spark Shell by `docker-compose exec tispark-master /opt/spark/bin/spark-shell`.
+
 ```bash
 $ docker-compose exec tispark-master /opt/spark/bin/spark-shell
 ...
@@ -159,13 +171,12 @@ scala> import org.apache.spark.sql.TiContext
 ...
 scala> val ti = new TiContext(spark)
 ...
-scala> ti.tidbMapDatabase("test");
+scala> ti.tidbMapDatabase("TPCH_001")
 ...
-scala> spark.sql("show tables").show
-+--------+---------+-----------+
-|database|tableName|isTemporary|
-+--------+---------+-----------+
-|        |       t1|       true|
-+--------+---------+-----------+
-
+scala> spark.sql("select count(*) from lineitem").show
++--------+
+|count(1)|
++--------+
+|   60175|
++--------+
 ```
