@@ -12,7 +12,8 @@ ENV SPARK_VERSION=2.1.1 \
 # base image only contains busybox version nohup and ps
 # spark scripts needs nohup in coreutils and ps in procps
 # and we can use mysql-client to test tidb connection
-RUN apk --no-cache add coreutils procps mysql-client
+RUN apk --no-cache add coreutils procps mysql-client python py-pip R \
+    && pip install pytispark==1.0.1 pyspark==2.1.2
 
 RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
     && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
