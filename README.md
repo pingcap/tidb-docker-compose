@@ -180,3 +180,12 @@ scala> spark.sql("select count(*) from lineitem").show
 |   60175|
 +--------+
 ```
+
+You can also access Spark with Python or R using following commands:
+
+```
+docker-compose exec tispark-master /opt/spark/bin/pyspark
+docker-compose exec tispark-master /opt/spark/bin/sparkR
+```
+
+More document about TiSpark can be found [here](https://github.com/pingcap/tispark).
