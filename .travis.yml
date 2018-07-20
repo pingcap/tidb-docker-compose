@@ -1,0 +1,11 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - sudo apt-get install mysql-client
+  - docker-compose up -d
+
+script:
+  - mysql -h 127.0.0.1 -P 4000 -u root -e "show databases"
