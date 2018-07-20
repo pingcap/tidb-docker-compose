@@ -5,11 +5,10 @@ services:
 
 before_install:
   - docker-compose up -d
+  - sleep 5                     # wait all components get ready
   - docker-compose ps
   - docker-compose logs
 
 script:
-  # - docker-compose ps | awk 'NR > 2' | grep -v 'Up' | grep -v 'dashboard-installer' | awk '{ print } END {if (NR > 0) {exit 1;}}'
   - docker ps -a --format="{{.Names}} {{.Image}} {{.Status}}" | grep -v 'Up' | grep -v 'Exited (0)' | awk '{print} END {if (NR>0) {exit 1;}}'
-  - sleep 5 # wait tidb-server ready
   - mysql -h 127.0.0.1 -P 4000 -u root -e "select tidb_version()\G" # test if tidb-server is working
