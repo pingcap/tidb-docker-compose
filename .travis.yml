@@ -4,7 +4,6 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get install mysql-client
   - docker-compose up -d
 
 script:
