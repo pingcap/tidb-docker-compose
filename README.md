@@ -5,6 +5,8 @@
 * Docker >= 16.10
 * Docker Compose >= 1.6.0
 
+*Note*: [Legacy Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_mac/) users should migrate to [Docker for Mac](https://store.docker.com/editions/community/docker-ce-desktop-mac), since it is tested that tidb-docker-compose can't started on Docker Toolbox and Docker Machine.
+
 ## Quick start
 
 ```bash
