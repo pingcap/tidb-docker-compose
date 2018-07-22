@@ -39,10 +39,13 @@ Now that Docker is set up, let’s deploy TiDB!
     ```
 2. Optionally, you can use `docker-compose` pull to get the latest Docker images.
 3. Change your directory to `tidb-docker-compose`:
- ```$ cd tidb-docker-compose
+
+ ```
+ $ cd tidb-docker-compose
  ```
 4. Deploy TiDB on your laptop:
- ```docker-compose up -d
+ ```
+ $ docker-compose up -d
  ```
 You can see messages in your terminal launching the default components of a TiDB cluster: 1 TiDB instance, 3 TiKV instances, 3 Placement Driver (PD) instances, Prometheus, Grafana, 2 TiSpark instances (one master, one slave), and a TiDB-Vision instance.
 
