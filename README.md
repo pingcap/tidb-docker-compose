@@ -1,182 +1,169 @@
-# TiDB docker-compose
+# How To Spin Up an HTAP Database in 5 Minutes with TiDB + TiSpark
 
-## Requirements
+## Tesed On
+* GNU/Linux Debian Stretch with 3.3GB of RAM and Core i3
+* Docker Community Edition >= 18.06.0-ce
+* Docker Compose >= 1.8.0
 
-* Docker >= 16.10
-* Docker Compose >= 1.6.0
+[TiDB](http://bit.ly/tidb_repo_publication) is an open-source distributed Hybrid Transactional and Analytical Processing (HTAP) database built by PingCAP, powering companies to do real-time data analytics on live transactional data in the same data warehouse – no more ETL, no more T+1, no more delays. More than 200 companies are now using TiDB in production. Its 2.0 version was launched in late April 2018 (read about it in this [ this blog post](http://bit.ly/tidb_2_0) ).
 
-## Quick start
+In this 5-minute tutorial, we will show you how to spin up a standard TiDB cluster using Docker Compose on your local computer, so you can get a taste of its hybrid power, before using it for work or your own project in production. A standard TiDB cluster includes TiDB (MySQL compatible stateless SQL layer), [TiKV](http://bit.ly/tikv_repo_publication) (a distributed transactional key-value store where the data is stored), and [TiSpark](https://github.com/pingcap/tispark) (an Apache Spark plug-in that powers complex analytical queries within the TiDB ecosystem).
 
-```bash
-$ git clone https://github.com/pingcap/tidb-docker-compose.git
-$ cd tidb-docker-compose && docker-compose pull # Get the latest Docker images
-$ docker-compose up -d
-$ mysql -h 127.0.0.1 -P 4000 -u root
-```
+    NOTE: This guide is for Linux users!
 
-* Access monitor at http://localhost:3000
+Ready? Let’s get started!
 
-Default user/password: admin/admin
+## Setting Up
+Before we start deploying TiDB, we’ll need a few things first: `apt` (or the package manager installed by your official Linux ditribution), `wget`, `Git`, `Docker`, and a `MySQL` client. If you don’t have them installed already, here are the instructions to get them. Replace `apt` with the name of the package manager of your Linux distribution if you are not using Debian, Ubuntu or their derivatives.
 
-* Access [tidb-vision](https://github.com/pingcap/tidb-vision) at http://localhost:8010
+1. To install `wget`.
+    ```
+    $ apt install wget
+    ```
+2. To install `git`
+    ```
+    $ apt install git
+    ```
+3. Install Docker Community Edition: https://www.docker.com/community-edition
 
-* Access Spark Web UI at http://localhost:8080
-  and access [TiSpark](https://github.com/pingcap/tispark) through spark://127.0.0.1:7077
+4. Install MySQL client
+    ```
+    $ apt install mysql-client
+    ```
 
-## Customize TiDB Cluster
+## Spin up a TiDB cluster
+Now that Docker is set up, let’s deploy TiDB!
+1. Clone TiDB Docker Compose onto your laptop:
+    ```
+    $ git clone https://github.com/pingcap/tidb-docker-compose
+    ```
+2. Optionally, you can use `docker-compose` pull to get the latest Docker images.
+3. Change your directory to `tidb-docker-compose`:
+ ```$ cd tidb-docker-compose
+ ```
+4. Deploy TiDB on your laptop:
+ ```docker-compose up -d
+ ```
+You can see messages in your terminal launching the default components of a TiDB cluster: 1 TiDB instance, 3 TiKV instances, 3 Placement Driver (PD) instances, Prometheus, Grafana, 2 TiSpark instances (one master, one slave), and a TiDB-Vision instance.
 
-### Configuration
+**_Congratulations! You have just deployed a TiDB cluster on your laptop!_**
 
-* config/pd.toml is copied from [PD repo](https://github.com/pingcap/pd/tree/master/conf)
-* config/tikv.toml is copied from [TiKV repo](https://github.com/pingcap/tikv/tree/master/etc)
-* config/tidb.toml is copied from [TiDB repo](https://github.com/pingcap/tidb/tree/master/config)
+To check if your deployment is successful:
+* Go to: `http://localhost:3000` to launch Grafana with default user/password: admin/admin.
+  * Go to `Home` and click on the pull down menu to see dashboards of different TiDB components: TiDB, TiKV, PD, entire cluster.
+  * You will see a dashboard full of panels and stats on your current TiDB cluster. Feel free to play around in Grafana, e.g. `TiDB-Cluster-TiKV`, or `TiDB-Cluster-PD`.
 
-If you find these configuration files outdated or mismatch with TiDB version, you can copy these files from their upstream repos and change their metrics addr with `pushgateway:9091`. Also `max-open-files` are configured to `1024` in tikv.toml to simplify quick start on Linux, because setting up ulimit on Linux with docker is quite tedious.
+* Now go to TiDB-vision at http://localhost:8010 (TiDB-vision is a cluster visualization tool to see data transfer and load-balancing inside your cluster).
 
-And config/*-dashboard.json are copied from [TiDB-Ansible repo](https://github.com/pingcap/tidb-ansible/tree/master/scripts)
+ * You can see a ring of 3 [TiKV](http://bit.ly/tikv_repo_publication) nodes. TiKV applies the Raft consensus protocol to provide strong consistency and high availability. Light grey blocks are empty spaces, dark grey blocks are Raft followers, and dark green blocks are Raft leaders. If you see flashing green bands, that represent communications between TiKV nodes.
 
-You can customize TiDB cluster configuration by editing docker-compose.yml and the above config files if you know what you're doing.
+## Test TiDB compatibility with MySQL
+As we mentioned, TiDB is MySQL compatible. You can use TiDB as MySQL slaves with instant horizontal scalability. That’s how many innovative tech companies, like [Mobike](https://www.pingcap.com/blog/Use-Case-TiDB-in-Mobike/), use TiDB.
 
-But edit these files manually is tedious and error-prone, a template engine is strongly recommended. See the following steps
+To test out this MySQL compatibility:
 
-### Install Helm
+1. Keep the tidb-docker-compose running, and launch a new Terminal tab or window.
 
-[Helm](https://helm.sh) is used as a template render engine
+2. Add MySQL to the path (if you haven’t already):
 
-```
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
-```
+    ```export PATH=${PATH}:/usr/local/mysql/bin```
 
-Or if you use Mac, you can use homebrew to install Helm by `brew install kubernetes-helm`
+3. Launch a MySQL client that connects to TiDB:
 
-### Bring up TiDB cluster
+    ```mysql -h 127.0.0.1 -P 4000  -u root```
 
-```bash
-$ git clone https://github.com/pingcap/tidb-docker-compose.git
-$ cd tidb-docker-compose
-$ vi compose/values.yaml # custom cluster size, docker image, port mapping etc
-$ helm template compose > generated-docker-compose.yaml
-$ docker-compose -f generated-docker-compose.yaml pull # Get the latest Docker images
-$ docker-compose -f generated-docker-compose.yaml up -d
-```
+**_Result_**: You will see the following message, which shows that TiDB is indeed connected to your MySQL instance:
 
-You can build docker image yourself for development test.
+**_Note_**: TiDB version number may be different.
 
-* Build from binary
+```Server version: 5.7.10-TiDB-v2.0.0-rc.4-31```
 
-  For pd, tikv and tidb, comment their `image` and `buildPath` fields out. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server and tidb/bin/tidb-server.
+## Let’s get some data!
+Now we will grab some sample data that we can play around with.
+1. Open a new Terminal tab or window and download the `tispark-sample-data.tar.gz` file.
 
-  These binary files can be built locally or downloaded from https://download.pingcap.org/tidb-latest-linux-amd64.tar.gz
+    ```$ wget http://download.pingcap.org/tispark-sample-data.tar.gz```
+2. Unzip the sample file:
 
-  For tidbVision, comment its `image` and `buildPath` fields out. And then copy tidb-vision repo to tidb-vision/tidb-vision.
+    ```$ tar zxvf tispark-sample-data.tar.gz```
+3. Inject the sample test data from sample data folder to MySQL:
+    ```$ mysql --local-infile=1 -u root -h 127.0.0.1 -P 4000 < tispark-sample-data/dss.ddl```
+    
+   This will take a few seconds.
+4. Go back to your MySQL client window or tab, and see what’s in there:
+    ```SHOW DATABASES;```
+    **Result**: You can see the `TPCH_001` database on the list. That’s the sample data we just ported over.
+    
+    Now let’s go into `TPCH_001`:
+    ```
+    USE TPCH_001;
+    SHOW TABLES;
+    ```
+    **Result**: You can see all the tables in `TPCH_001`, like `NATION`, `ORDERS`, etc.
 
-* Build from source
+5. Let’s see what’s in the `NATION` table:
 
-  Leave pd, tikv, tidb and tidbVision `image` field empty and set their `buildPath` field to their source directory.
+    `SELECT * FROM NATION;`
+    
+**Result**: You’ll see a list of countries with some keys and comments.
 
-  For example, if your local tikv source directory is $GOPATH/src/github.com/pingcap/tikv, just set tikv `buildPath` to `$GOPATH/src/github.com/pingcap/tikv`
+## Launch TiSpark
 
-  *Note:* Compiling tikv from source consumes lots of memory, memory of Docker for Mac needs to be adjusted to greater than 6GB
+Now let’s launch TiSpark, the last missing piece of our hybrid database puzzle.
 
-[tidb-vision](https://github.com/pingcap/tidb-vision) is a visiualization page of TiDB Cluster, it's WIP project and can be disabled by commenting `tidbVision` out.
+1. In the same window where you downloaded TiSpark sample data (or open a new tab), go back to the tidb-docker-compose directory.
 
-[TiSpark](https://github.com/pingcap/tispark) is a thin layer built for running Apache Spark on top of TiDB/TiKV to answer the complex OLAP queries.
+2. Launch Spark within TiDB with the following command:
+    
+    ```docker-compose exec tispark-master  /opt/spark-2.1.1-bin-hadoop2.7/bin/spark-shell```
+    This will take a few minutes. 
+    **Result**: Now you can Spark! Now you can Spark
 
-#### Host network mode (Linux)
+    ```
+    Welcome to
+          ____              __
+         / __/__  ___ _____/ /__
+        _\ \/ _ \/ _ `/ __/  '_/
+       /___/ .__/\_,_/_/ /_/\_\   version 2.1.1
+          /_/
 
-*Note:* Docker for Mac uses a Linux virtual machine, host network mode will not expose any services to host machine. So it's useless to use this mode.
+    Using Scala version 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_172)
+    Type in expressions to have them evaluated.
+    Type :help for more information.
+    ```
 
-When using TiKV directly without TiDB, host network mode must be enabled. This way all services use host network without isolation. So you can access all services on the host machine.
+3. Use the following three commands, one by one, to bind TiSpark to this Spark instance and map to the database TPCH_001, the same sample data that’s available in our MySQL instance:
 
-You can enable this mode by setting `networkMode: host` in compose/values.yaml and regenerate docker-compose.yml. When in this mode, prometheus address in configuration files should be changed from `prometheus:9090` to `127.0.0.1:9090`, and pushgateway address should be changed from `pushgateway:9091` to `127.0.0.1:9091`.
+    ```
+    import org.apache.spark.sql.TiContext
+    val ti = new TiContext(spark)
+    ti.tidbMapDatabase("TPCH_001")
+    ```
+4. Now, let’s see what’s in the `NATION` table (should be the same as what we saw on our MySQL client):
 
-These modification can be done by:
-```bash
-# Note: this only needed when networkMode is `host`
-sed -i 's/pushgateway:9091/127.0.0.1:9091/g' config/*
-sed -i 's/prometheus:9090/127.0.0.1:9090/g' config/*
-```
+    ```spark.sql("select * from nation").show(30);```
 
-After all the above is done, you can start tidb-cluster as usual by `docker-compose -f generated-docker-compose.yml up -d`
+## Let’s get hybrid!
+Now, let’s go back to the MySQL tab or window, make some changes to our tables, and see if the changes show up on the TiSpark side.
 
-### Debug TiDB/TiKV/PD instances
-Prerequisites:
+1. In the MySQL client, try this UPDATE:
 
-Pprof: This is a tool for visualization and analysis of profiling data. Follow [these instructions](https://github.com/google/pprof#building-pprof) to install pprof.
+    ```UPDATE NATION SET N_NATIONKEY=444 WHERE N_NAME="CANADA";
+    SELECT * FROM NATION; ```
 
-Graphviz: [http://www.graphviz.org/](http://www.graphviz.org/), used to generate graphic visualizations of profiles.
+2. Then see if the update worked:
 
-* debug TiDB or PD instances
+    ```SELECT * FROM NATION;```
 
-```bash
-### Use the following command to starts a web server for graphic visualizations of golang program profiles
-$ ./tool/container_debug -s pd0 -p /pd-server -w
-```
-The above command will produce graphic visualizations of profiles of `pd0` that can be accessed through the browser.
+3. Now go to the TiSpark Terminal window, and see if you can see the same update:
 
-* debug TiKV instances
+    ```spark.sql("select * from nation").show(30);```
 
-```bash
-### step 1: select a tikv instance(here is tikv0) and specify the binary path in container to enter debug container
-$ ./tool/container_debug -s tikv0 -p /tikv-server
+    **Result**: The UPDATE you made on the MySQL side shows up immediately in TiSpark!
+    
+-You can see that both the MySQL and TiSpark clients return the same results – fresh data for you to do analytics on right away. Voila!
 
-### after step 1, we can generate flame graph for tikv0 in debug container
-$ ./run_flamegraph.sh 1  # 1 is the tikv0's process id
+## Summary
+With this simple deployment of TiDB on your local machine, you now have a functioning Hybrid Transactional and Analytical processing (HTAP) database. You can continue to make changes to the data in your MySQL client (simulating transactional workloads) and analyze the data with those changes in TiSpark (simulating real-time analytics).
 
-### also can fetch tikv0's stack informations with GDB in debug container
-$ gdb /tikv-server 1 -batch -ex "thread apply all bt" -ex "info threads"
-```
-
-### Access TiDB cluster
-
-TiDB uses ports: 4000(mysql) and 10080(status) by default
-
-```bash
-$ mysql -h 127.0.0.1 -P 4000 -u root
-```
-
-And Grafana uses port 3000 by default, so open your browser at http://localhost:3000 to view monitor dashboard
-
-If you enabled tidb-vision, you can view it at http://localhost:8010
-
-### Access Spark shell and load TiSpark
-
-Insert some sample data to the TiDB cluster:
-
-```bash
-$ docker-compose exec tispark-master bash
-$ cd /opt/spark/data/tispark-sample-data
-$ mysql -h tidb -P 4000 -u root < dss.ddl
-```
-
-After the sample data is loaded into the TiDB cluster, you can access Spark Shell by `docker-compose exec tispark-master /opt/spark/bin/spark-shell`.
-
-```bash
-$ docker-compose exec tispark-master /opt/spark/bin/spark-shell
-...
-Spark context available as 'sc' (master = local[*], app id = local-1527045927617).
-Spark session available as 'spark'.
-Welcome to
-      ____              __
-     / __/__  ___ _____/ /__
-    _\ \/ _ \/ _ `/ __/  '_/
-   /___/ .__/\_,_/_/ /_/\_\   version 2.1.1
-      /_/
-
-Using Scala version 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_172)
-Type in expressions to have them evaluated.
-Type :help for more information.
-
-scala> import org.apache.spark.sql.TiContext
-...
-scala> val ti = new TiContext(spark)
-...
-scala> ti.tidbMapDatabase("TPCH_001")
-...
-scala> spark.sql("select count(*) from lineitem").show
-+--------+
-|count(1)|
-+--------+
-|   60175|
-+--------+
-```
+Of course, launching TiDB on your local machine is purely for experimental purposes. If you are interested in trying out TiDB for your production environment, send us a note: `info@pingcap.com` or reach out on our [website](https://www.pingcap.com/en/). We’d be happy to help you!
