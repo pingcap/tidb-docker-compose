@@ -2,7 +2,7 @@ FROM anapsix/alpine-java:8
 
 ENV SPARK_VERSION=2.1.1 \
     HADOOP_VERSION=2.7 \
-    TISPARK_VERSION=1.0 \
+    TISPARK_VERSION=1.0.1 \
     TISPARK_R_VERSION=1.1 \
     TISPARK_PYTHON_VERSION=1.0.1 \
     SPARK_HOME=/opt/spark \
