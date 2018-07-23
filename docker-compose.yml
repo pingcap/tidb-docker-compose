@@ -123,6 +123,7 @@ services:
       - /opt/spark/sbin/start-master.sh
     volumes:
       - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+      - ./tispark/tests:/opt/tispark/tests:ro
     environment:
       SPARK_MASTER_PORT: 7077
       SPARK_MASTER_WEBUI_PORT: 8080

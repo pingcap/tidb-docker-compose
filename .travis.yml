@@ -12,3 +12,5 @@ before_install:
 script:
   - docker ps -a --format="{{.Names}} {{.Image}} {{.Status}}" | grep -v 'Up' | grep -v 'Exited (0)' | awk '{print} END {if (NR>0) {exit 1;}}'
   - mysql -h 127.0.0.1 -P 4000 -u root -e "select tidb_version()\G" # test if tidb-server is working
+  - docker-compose exec tispark-master bash /opt/tispark/tests/loaddata.sh  # add some data for tests
+  - docker-compose exec tispark-master /opt/spark/bin/spark-submit /opt/tispark/tests/tests.py  # run tispark tests
