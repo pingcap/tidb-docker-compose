@@ -7,6 +7,6 @@ ti = pti.TiContext(spark)
  
 ti.tidbMapDatabase("TPCH_001")
  
-count = spark.sql("select count(*) from lineitem").first()['count']
+count = spark.sql("select count(*) as c from lineitem").first()['c']
 
 assert 60175 == count

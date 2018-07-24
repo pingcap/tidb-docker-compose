@@ -5,7 +5,7 @@ services:
     image: pingcap/tispark:latest
     volumes:
       - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-      - ./tispark-tests:/opt/tispark-tests:ro
+      - ./tispark-tests/tests:/opt/spark/tests:ro
 
 networks:
   default:
