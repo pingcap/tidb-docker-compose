@@ -13,7 +13,7 @@ before_install:
   - whereis docker-compose
   - docker-compose -v
   - docker-compose up -d
-  - sleep 5                     # wait all components get ready
+  - sleep 10                     # wait all components get ready
   - docker-compose ps
   - docker network ls
   - pwd
