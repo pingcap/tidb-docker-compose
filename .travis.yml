@@ -10,15 +10,12 @@ before_install:
   - sudo apt-get -y install docker-ce  # update docker version
   - sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
   - docker -v
-  - whereis docker-compose
   - docker-compose -v
   - docker-compose up -d
   - sleep 10                     # wait all components get ready
   - docker-compose ps
+  - docker images
   - docker network ls
-  - pwd
-  - ls ./
-  - ls ./tispark-tests
   - docker-compose logs
 
 script:
