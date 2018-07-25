@@ -1,0 +1,13 @@
+version: '2.1'
+
+services:
+  tispark-tests:
+    image: pingcap/tispark:latest
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+      - ./tispark-tests/tests:/opt/spark/tests:ro
+
+networks:
+  default:
+    external:
+      name: tidb-docker-compose_default

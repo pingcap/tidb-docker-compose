@@ -4,11 +4,21 @@ services:
   - docker
 
 before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y install docker-ce  # update docker version
+  - sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+  - docker -v
+  - docker-compose -v
   - docker-compose up -d
-  - sleep 5                     # wait all components get ready
+  - sleep 10                     # wait all components get ready
   - docker-compose ps
+  - docker images
+  - docker network ls
   - docker-compose logs
 
 script:
   - docker ps -a --format="{{.Names}} {{.Image}} {{.Status}}" | grep -v 'Up' | grep -v 'Exited (0)' | awk '{print} END {if (NR>0) {exit 1;}}'
-  - mysql -h 127.0.0.1 -P 4000 -u root -e "select tidb_version()\G" # test if tidb-server is working
+  - docker-compose -f docker-compose-test.yml run --rm tispark-tests bash /opt/spark/tests/loaddata.sh  # add some data for tests
+  - docker-compose -f docker-compose-test.yml run --rm tispark-tests /opt/spark/bin/spark-submit /opt/spark/tests/tests.py  # run tispark tests
