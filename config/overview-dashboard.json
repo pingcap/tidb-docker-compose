@@ -69,7 +69,7 @@
       "title": "Report",
       "tooltip": "Open a pdf report for the current dashboard",
       "type": "link",
-      "url": "http://172.16.10.71:8686/api/report/test-cluster-overview?apitoken=eyJrIjoiMjYzSkNIdlZKUnowSHhMWEhnZjZWWENxdXUwOVNlcFMiLCJuIjoiZ3JhZmFuYV9hcGlrZXkiLCJpZCI6MX0="
+      "url": "http://172.16.10.71:8686/api/report/test-cluster-overview?apitoken=eyJrIjoiWTlFZ0M0REpKbFY3aFRvOVNJZEh6cWNJaTkxY3NLdTYiLCJuIjoiZ3JhZmFuYV9hcGlrZXkiLCJpZCI6MX0="
     }
   ],
   "refresh": "1m",
@@ -240,7 +240,7 @@
             }
           ],
           "timeFrom": "1s",
-          "title": "Services  Online",
+          "title": "",
           "transform": "timeseries_aggregations",
           "type": "table"
         },
@@ -406,7 +406,7 @@
             }
           ],
           "timeFrom": "1s",
-          "title": "Services  Offline",
+          "title": "",
           "transform": "timeseries_aggregations",
           "type": "table"
         }
@@ -4888,5 +4888,5 @@
   },
   "timezone": "browser",
   "title": "Test-Cluster-Overview",
-  "version": 2
+  "version": 6
 }

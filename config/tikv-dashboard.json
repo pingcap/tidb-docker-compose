@@ -1630,7 +1630,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "grpc message error",
+          "title": "coprocessor error",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -10288,95 +10288,6 @@
           "yaxes": [
             {
               "format": "percentunit",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_TEST-CLUSTER}",
-          "decimals": 1,
-          "fill": 1,
-          "id": 2108,
-          "legend": {
-            "alignAsTable": true,
-            "avg": false,
-            "current": true,
-            "max": true,
-            "min": false,
-            "rightSide": true,
-            "show": true,
-            "sideWidth": 250,
-            "sort": "current",
-            "sortDesc": false,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(tikv_threads_state) by (job, state)",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "{{job}}-{{state}}",
-              "refId": "A",
-              "step": 4
-            },
-            {
-              "expr": "sum(tikv_threads_state) by (job)",
-              "format": "time_series",
-              "intervalFactor": 2,
-              "legendFormat": "{{job}}-total",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Threads State",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
               "label": null,
               "logBase": 1,
               "max": null,

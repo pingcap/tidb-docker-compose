@@ -795,7 +795,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Current Regions Count",
+          "title": "Current Peer Count",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1188,7 +1188,7 @@
           },
           "yaxes": [
             {
-              "format": "decbytes",
+              "format": "bytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1267,7 +1267,7 @@
           },
           "yaxes": [
             {
-              "format": "decbytes",
+              "format": "bytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1346,7 +1346,7 @@
           },
           "yaxes": [
             {
-              "format": "decbytes",
+              "format": "bytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1769,7 +1769,7 @@
           },
           "yaxes": [
             {
-              "format": "decmbytes",
+              "format": "mbytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1848,7 +1848,7 @@
           },
           "yaxes": [
             {
-              "format": "decmbytes",
+              "format": "mbytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -2268,7 +2268,7 @@
           },
           "yaxes": [
             {
-              "format": "decbytes",
+              "format": "bytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -2600,7 +2600,7 @@
           },
           "yaxes": [
             {
-              "format": "decbytes",
+              "format": "bytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -4817,9 +4817,9 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "histogram_quantile(0.99, sum(rate(etcd_network_peer_round_trip_time_seconds_bucket[5m])) by (instance, To, le))",
+              "expr": "histogram_quantile(0.99, sum(rate(etcd_network_peer_round_trip_time_seconds_bucket[5m])) by (instance, le))",
               "intervalFactor": 2,
-              "legendFormat": "{{instance}} - {{To}}",
+              "legendFormat": "{{instance}}",
               "metric": "",
               "refId": "A",
               "step": 4
@@ -5538,7 +5538,7 @@
             "avg": false,
             "current": true,
             "hideEmpty": true,
-            "hideZero": false,
+            "hideZero": true,
             "max": true,
             "min": false,
             "rightSide": true,
@@ -5561,7 +5561,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "round(histogram_quantile(0.99, sum(rate(pd_scheduler_region_heartbeat_latency_seconds_bucket[5m])) by (store, le)), 1000)",
+              "expr": "histogram_quantile(0.99, sum(rate(pd_scheduler_region_heartbeat_latency_seconds_bucket[5m])) by (store, le))",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
