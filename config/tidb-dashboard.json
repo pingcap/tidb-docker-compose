@@ -49,9 +49,15 @@
   "id": null,
   "links": [
     {
-      "icon": "external link",
+      "icon": "doc",
+      "includeVars": true,
+      "keepTime": true,
       "tags": [],
-      "type": "dashboards"
+      "targetBlank": true,
+      "title": "Report",
+      "tooltip": "Open a pdf report for the current dashboard",
+      "type": "link",
+      "url": "http://172.16.10.49:8686/api/report/test-cluster-tidb?apitoken=eyJrIjoiQkU2bmFQdjZMeTRmWVJ3UFo0bmV3Ym5zRG04Y2hmMHYiLCJuIjoiZ3JhZmFuYV9hcGlrZXkiLCJpZCI6MX0="
     }
   ],
   "refresh": "30s",
@@ -238,7 +244,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -308,7 +314,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Statement Count",
+          "title": "Statement OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -421,6 +427,99 @@
               "format": "short",
               "label": null,
               "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "editable": true,
+          "error": false,
+          "fill": 0,
+          "grid": {},
+          "id": 92,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sideWidth": 250,
+            "sort": "max",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "minSpan": 12,
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [
+            {
+              "alias": "total",
+              "lines": false
+            }
+          ],
+          "spaceLength": 10,
+          "span": 12,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(increase(tidb_server_execute_error_total[1m])) by (type)",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": " {{type}}",
+              "refId": "A",
+              "step": 30
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Failed Query OPM",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 2,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 2,
               "max": null,
               "min": "0",
               "show": true
@@ -780,6 +879,169 @@
               "show": true
             }
           ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 94,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "increase(tidb_server_execute_error_total[1m])",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "{{type}} @ {{instance}}",
+              "refId": "A",
+              "step": 60
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Failed Query OPM Detail",
+          "tooltip": {
+            "msResolution": true,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "none",
+              "label": null,
+              "logBase": 2,
+              "max": null,
+              "min": "0.001",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "description": "The internal SQL is used by TiDB itself.",
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 68,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(tidb_session_restricted_sql_total[30s]))",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "",
+              "refId": "A",
+              "step": 10
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Internal SQL OPS",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
         }
       ],
       "repeat": null,
@@ -790,7 +1052,7 @@
       "titleSize": "h6"
     },
     {
-      "collapse": true,
+      "collapse": false,
       "height": "250px",
       "panels": [
         {
@@ -1020,7 +1282,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Goroutines",
+          "title": "Goroutine Count",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1088,7 +1350,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "tidb_server_event_total",
+              "expr": "increase(tidb_server_event_total[10m])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}-{{type}}",
@@ -1098,7 +1360,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Events",
+          "title": "Events OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1140,10 +1402,12 @@
           "fill": 1,
           "id": 54,
           "legend": {
+            "alignAsTable": true,
             "avg": false,
             "current": false,
             "max": false,
             "min": false,
+            "rightSide": true,
             "show": true,
             "total": false,
             "values": false
@@ -1163,17 +1427,26 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(tidb_server_panic[1m])) by (instance)",
+              "expr": "increase(tidb_server_panic_total[1m])",
               "format": "time_series",
+              "hide": false,
               "intervalFactor": 2,
-              "legendFormat": "{{instance}}",
+              "legendFormat": "panic-{{instance}}",
               "refId": "A"
+            },
+            {
+              "expr": "increase(tidb_server_critical_error_total[1m])",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 2,
+              "legendFormat": "critical-{{instance}}",
+              "refId": "B"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Panic",
+          "title": "Uncommon Error OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1250,7 +1523,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Keep Alive",
+          "title": "Keep Alive OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1327,7 +1600,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 4,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -1343,7 +1616,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "TPS",
+          "title": "Transaction OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1360,7 +1633,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1404,7 +1677,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 4,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -1515,7 +1788,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Statements Per Transaction",
+          "title": "Transaction Statement Num",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1547,19 +1820,7 @@
               "show": true
             }
           ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": true,
-      "title": "Transaction",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": true,
-      "height": 250,
-      "panels": [
+        },
         {
           "aliasColors": {},
           "bars": false,
@@ -1606,7 +1867,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Session Retry Error",
+          "title": "Session Retry Error OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1623,7 +1884,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1675,99 +1936,32 @@
           "steppedLine": false,
           "targets": [
             {
+              "expr": "histogram_quantile(1.0, sum(rate(tidb_session_retry_num_bucket[30s])) by (le))",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "100",
+              "refId": "A",
+              "step": 10
+            },
+            {
               "expr": "histogram_quantile(0.99, sum(rate(tidb_session_retry_num_bucket[30s])) by (le))",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "",
-              "refId": "A",
-              "step": 10
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Session Retry Counter",
-          "tooltip": {
-            "msResolution": false,
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "ops",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
+              "legendFormat": "99",
+              "refId": "B"
             },
             {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_TEST-CLUSTER}",
-          "description": "The internal SQL is used by TiDB itself.",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {},
-          "id": 68,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": false,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null as zero",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 4,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(rate(tidb_session_restricted_sql_total[30s]))",
+              "expr": "histogram_quantile(0.90, sum(rate(tidb_session_retry_num_bucket[30s])) by (le))",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "",
-              "refId": "A",
-              "step": 10
+              "legendFormat": "90",
+              "refId": "C"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Internal SQL Count",
+          "title": "Transaction Retry Num",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1784,7 +1978,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1806,7 +2000,7 @@
       "repeatIteration": null,
       "repeatRowId": null,
       "showTitle": true,
-      "title": "Session",
+      "title": "Transaction",
       "titleSize": "h6"
     },
     {
@@ -1850,7 +2044,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 12,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -1866,7 +2060,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Expensive Executors",
+          "title": "Expensive Executors OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -1886,6 +2080,93 @@
               "format": "short",
               "label": null,
               "logBase": 10,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "decimals": null,
+          "editable": true,
+          "error": false,
+          "fill": 1,
+          "grid": {},
+          "id": 91,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "hideEmpty": true,
+            "hideZero": true,
+            "max": true,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": null,
+            "sortDesc": null,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null as zero",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(tidb_server_plan_cache_total[1m])) by (type)",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "{{type}}",
+              "refId": "A",
+              "step": 30
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Queries Using Plan Cache OPS",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "cumulative"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 2,
               "max": null,
               "min": "0",
               "show": true
@@ -2632,7 +2913,7 @@
       "titleSize": "h6"
     },
     {
-      "collapse": false,
+      "collapse": true,
       "height": 250,
       "panels": [
         {
@@ -2793,7 +3074,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "TiClient Region Error",
+          "title": "TiClient Region Error OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -2810,7 +3091,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -2873,7 +3154,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Backoff Count",
+          "title": "KV Backoff OPS",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -2957,7 +3238,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "LockResolve",
+          "title": "Lock Resolve OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3049,7 +3330,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Other Errors",
+          "title": "Other Errors OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3145,7 +3426,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Request Seconds 999 by store",
+          "title": "KV Request Duration 999 by store",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3229,7 +3510,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Request Seconds 999 by type",
+          "title": "KV Request Duration 999 by type",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3311,7 +3592,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Cmd Seconds 9999",
+          "title": "KV Cmd Duration 9999",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3395,7 +3676,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Cmd Seconds 99",
+          "title": "KV Cmd Duration 99",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3493,7 +3774,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Cmd Count",
+          "title": "KV Cmd OPS",
           "tooltip": {
             "msResolution": true,
             "shared": true,
@@ -3575,7 +3856,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "KV Txn Count",
+          "title": "KV Txn OPS",
           "tooltip": {
             "msResolution": true,
             "shared": true,
@@ -3657,7 +3938,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "90 Txn Regions Num",
+          "title": "Txn Regions Num 90",
           "tooltip": {
             "msResolution": true,
             "shared": true,
@@ -3741,7 +4022,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Txn Write Size Bytes",
+          "title": "Txn Write Size Bytes 100",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3817,7 +4098,7 @@
               "expr": "histogram_quantile(1, sum(rate(tidb_tikvclient_txn_write_kv_num_bucket[1m])) by (le, instance))",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "{{instance}}",
+              "legendFormat": "100 {{instance}}",
               "refId": "B",
               "step": 40
             }
@@ -3825,7 +4106,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Txn Write KV Num",
+          "title": "Txn Write KV Num 100",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -3909,7 +4190,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Load Safepoint Count",
+          "title": "Load Safepoint OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4003,7 +4284,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "PD Client CMD count",
+          "title": "PD Client CMD OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4182,7 +4463,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "PD Client CMD Fail",
+          "title": "PD Client CMD Fail OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4199,7 +4480,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -4269,7 +4550,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "PD TSO QPS",
+          "title": "PD TSO OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4642,7 +4923,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Load Schema QPS",
+          "title": "Load Schema OPS",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4659,7 +4940,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 10,
               "max": null,
@@ -4728,7 +5009,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Schema Lease Error Increase",
+          "title": "Schema Lease Error OPM",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4745,7 +5026,7 @@
           },
           "yaxes": [
             {
-              "format": "ops",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -4822,7 +5103,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "DDL Duration 95th",
+          "title": "DDL Duration 95",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -4902,7 +5183,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Batch Add Index Duration",
+          "title": "Batch Add Index Duration 100",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -4971,7 +5252,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(tidb_ddl_waiting_jobs[1m])) by (instance, type)",
+              "expr": "tidb_ddl_waiting_jobs",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}-{{type}}",
@@ -4981,7 +5262,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "DDL Waiting Jobs",
+          "title": "DDL Waiting Jobs Count",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5048,7 +5329,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(tidb_ddl_worker_operation_total[1m])) by (instance, type)",
+              "expr": "increase(tidb_ddl_worker_operation_total[1m])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}-{{type}}",
@@ -5058,7 +5339,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "DDL Counter",
+          "title": "DDL OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5127,7 +5408,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(tidb_ddl_worker_operation_duration_seconds_bucket[1m])) by (type, result)",
+              "expr": "histogram_quantile(0.99, sum(increase(tidb_ddl_worker_operation_duration_seconds_bucket[1m])) by (le, type, result))",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{type}}-{{result}}",
@@ -5137,7 +5418,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "DDL Worker Operation Duration 99th percentile",
+          "title": "DDL Worker Duration 99",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5446,6 +5727,7 @@
           "targets": [
             {
               "expr": "histogram_quantile(0.95, sum(rate(tidb_statistics_auto_analyze_duration_bucket[1m])) by (le))",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "auto analyze duration",
               "refId": "A",
@@ -5455,7 +5737,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Auto Analyze Seconds 95",
+          "title": "Auto Analyze Duration 95",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5697,7 +5979,159 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Pseudo Estimation Total",
+          "title": "Pseudo Estimation OPS",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "fill": 1,
+          "id": 92,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(tidb_statistics_dump_feedback_total[1m])) by (type)",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "{{type}}",
+              "refId": "A",
+              "step": 30
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Dump Feedback OPS",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_TEST-CLUSTER}",
+          "fill": 1,
+          "id": 93,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(rate(tidb_statistics_update_stats_total[1m])) by (type)",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "{{type}}",
+              "refId": "A",
+              "step": 30
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Update Stats OPS",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -5947,7 +6381,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Meta Operations Duration 99th percentile",
+          "title": "Meta Operations Duration 99",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6036,7 +6470,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Worker Action Increase",
+          "title": "Worker Action OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6111,7 +6545,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Duration",
+          "title": "Duration 99",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6176,7 +6610,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(tidb_tikvclient_gc_config) by (type)",
+              "expr": "max(tidb_tikvclient_gc_config) by (type)",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{type}}",
@@ -6261,7 +6695,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "GC Failure",
+          "title": "GC Failure OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6326,7 +6760,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(tidb_tikvclient_gc_action_result[1m])) by (type)",
+              "expr": "sum(increase(tidb_tikvclient_gc_action_result[1m])) by (type)",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{type}}",
@@ -6336,7 +6770,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Action Result",
+          "title": "Action Result OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6411,7 +6845,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Too Many Locks Error",
+          "title": "Too Many Locks Error OPM",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -6490,5 +6924,5 @@
   },
   "timezone": "browser",
   "title": "Test-Cluster-TiDB",
-  "version": 3
+  "version": 5
 }
