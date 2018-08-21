@@ -65,7 +65,7 @@ tidbVision:
 
 # comment following monitor components sections out to disable monitor
 grafana:
-  image: pingcap/grafana:4.6.3
+  image: grafana/grafana:4.6.3
   port: "3000"
   logLevel: error
 
@@ -75,7 +75,7 @@ pushgateway:
   logLevel: error
 
 prometheus:
-  image: pingcap/prometheus:v2.2.1
+  image: prom/prometheus:v2.2.1
   port: "9090"
   logLevel: error
 
