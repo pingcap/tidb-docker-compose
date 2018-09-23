@@ -1,0 +1,57 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "pd2.fullname" . }}
+  labels:
+    app: {{ template "pd2.name" . }}
+    chart: {{ template "pd2.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pd2.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "pd2.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: {{ template "pd2.name" . }}
+              mountPath: /pd.toml
+              subPath: pd.toml
+            - name: {{ template "pd2.name" . }}-data
+              mountPath: /data/pd2
+          command:
+             - --name=pd2
+             - --client-urls=http://0.0.0.0:2379
+             - --peer-urls=http://0.0.0.0:2380
+             - --advertise-client-urls=http://pd2:2379
+             - --advertise-peer-urls=http://pd2:2380
+             - --initial-cluster=pd2=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+             - --data-dir=/data/pd2
+             - --config=/pd.toml            
+          ports:
+            - name: http-2379
+              containerPort: 2379 
+              protocol: TCP
+            - name: http-2380
+              containerPort: 2380 
+              protocol: TCP
+      volumes:
+        - name: {{ template "pd2.name" . }}
+          configMap:
+            name: {{ template "pd2.name" . }}
+        - name: {{ template "pd2.name" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ template "pd2.name" . }}
+

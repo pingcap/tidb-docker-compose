@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "tikv2.name" . }}
+  labels:
+    app: {{ template "tikv2.name" . }}
+    chart: {{ template "tikv2.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ (tpl (.Files.Glob "configs/tikv.toml").AsConfig . ) | indent 2 }}

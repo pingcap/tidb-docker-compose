@@ -1,0 +1,21 @@
+# Default values for pd0.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: pingcap/tikv
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 20160
+
+pv:
+  capacity:
+    storage: 500Gi
+  hostPath:
+    path: /mnt/pv/tikv/tikv0
+

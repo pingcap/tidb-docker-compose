@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "tispark-master.fullname" . }}
+  labels:
+    app: {{ template "tispark-master.name" . }}
+    chart: {{ template "tispark-master.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port1 }}
+      targetPort: http1
+      protocol: TCP
+      name: http1
+    - port: {{ .Values.service.port2 }}
+      targetPort: http2
+      protocol: TCP
+      name: http2
+  selector:
+    app: {{ template "tispark-master.name" . }}
+    release: {{ .Release.Name }}

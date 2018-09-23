@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "tidb.fullname" . }}
+  labels:
+    app: {{ template "tidb.name" . }}
+    chart: {{ template "tidb.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port1 }}
+      targetPort: http1
+      protocol: TCP
+      name: http1
+    - port: {{ .Values.service.port2 }}
+      targetPort: http2
+      protocol: TCP
+      name: http2
+  selector:
+    app: {{ template "tidb.name" . }}
+    release: {{ .Release.Name }}

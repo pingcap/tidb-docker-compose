@@ -1,0 +1,51 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "tikv0.fullname" . }}
+  labels:
+    app: {{ template "tikv0.name" . }}
+    chart: {{ template "tikv0.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "tikv0.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "tikv0.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: {{ template "tikv0.name" . }}
+              mountPath: /tikv.toml
+              subPath: tikv.toml
+            - name: {{ template "tikv0.name" . }}-data
+              mountPath: /data/tikv0
+          command:
+            - --addr=0.0.0.0:20160
+            - --advertise-addr=tikv0:20160
+            - --data-dir=/data/tikv0
+            - --pd=pd0:2379,pd1:2379,pd2:2379
+            - --config=/tikv.toml
+          ports:
+            - name: http
+              containerPort: 20160 
+              protocol: TCP
+      volumes:
+        - name: {{ template "tikv0.name" . }}
+          configMap:
+            name: {{ template "tikv0.name" . }}
+        - name: {{ template "tikv0.name" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ template "tikv0.name" . }}
+

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "pd1.name" . }}
+  labels:
+    app: {{ template "pd1.name" . }}
+    chart: {{ template "pd1.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ (tpl (.Files.Glob "configs/pd.toml").AsConfig . ) | indent 2 }}

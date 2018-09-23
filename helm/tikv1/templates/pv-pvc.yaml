@@ -1,0 +1,35 @@
+
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ template "tikv1.name" . }}
+    chart: {{ template "tikv1.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  capacity:
+    storage: {{ .Values.pv.capacity.storage }} 
+  accessModes:
+    - ReadWriteMany 
+  persistentVolumeReclaimPolicy: Retain 
+  hostPath: 
+    path: {{ .Values.pv.hostPath.path }}
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "tikv1.name" . }}
+  labels:
+    app: {{ template "tikv1.name" . }}
+    chart: {{ template "tikv1.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.pv.capacity.storage }}
+

@@ -1,0 +1,35 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "tidb-vision.fullname" . }}
+  labels:
+    app: {{ template "tidb-vision.name" . }}
+    chart: {{ template "tidb-vision.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "tidb-vision.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "tidb-vision.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PD_ENDPOINT 
+              value: "pd0:2379"
+          ports:
+            - name: http
+              containerPort: 8010 
+              protocol: TCP
+        - name: {{ template "tidb-vision.name" . }}
+          configMap:
+            name: {{ template "tidb-vision.name" . }}

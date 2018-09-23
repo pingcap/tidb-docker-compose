@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "tidb.name" . }}
+  labels:
+    app: {{ template "tidb.name" . }}
+    chart: {{ template "tidb.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ (tpl (.Files.Glob "configs/tidb.toml").AsConfig . ) | indent 2 }}

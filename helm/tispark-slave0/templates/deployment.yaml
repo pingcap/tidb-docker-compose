@@ -1,0 +1,44 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "tispark-slave0.fullname" . }}
+  labels:
+    app: {{ template "tispark-slave0.name" . }}
+    chart: {{ template "tispark-slave0.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "tispark-slave0.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "tispark-slave0.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: {{ template "tispark-slave0.name" . }}
+              mountPath: /opt/spark/conf/spark-defaults.conf
+              subPath: spark-defaults.conf
+          command:
+            - /opt/spark/sbin/start-master.sh
+            - spark://tispark-master:7077
+          env:
+            - name: SPARK_WORKER_WEBUI_PORT 
+              value: "38081"
+          ports:
+            - name: http
+              containerPort: 38081 
+              protocol: TCP
+        - name: {{ template "tispark-slave0.name" . }}
+          configMap:
+            name: {{ template "tispark-slave0.name" . }}

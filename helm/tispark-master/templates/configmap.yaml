@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "tispark-master.name" . }}
+  labels:
+    app: {{ template "tispark-master.name" . }}
+    chart: {{ template "tispark-master.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{ (tpl (.Files.Glob "configs/spark-defaults.conf").AsConfig . ) | indent 2 }}

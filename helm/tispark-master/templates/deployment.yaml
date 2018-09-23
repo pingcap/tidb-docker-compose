@@ -1,0 +1,49 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "tispark-master.fullname" . }}
+  labels:
+    app: {{ template "tispark-master.name" . }}
+    chart: {{ template "tispark-master.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "tispark-master.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "tispark-master.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: {{ template "tispark-master.name" . }}
+              mountPath: /opt/spark/conf/spark-defaults.conf
+              subPath: spark-defaults.conf
+          command:
+            - /opt/spark/sbin/start-master.sh
+          env:
+            - name: SPARK_MASTER_PORT
+              value: "7077"
+            - name: SPARK_MASTER_WEBUI_PORT
+              value: "8080"
+          ports:
+            - name: http1
+              containerPort: 7077 
+              protocol: TCP
+            - name: http2
+              containerPort: 8080 
+              protocol: TCP
+      volumes:
+        - name: {{ template "tispark-master.name" . }}
+          configMap:
+            name: {{ template "tispark-master.name" . }}

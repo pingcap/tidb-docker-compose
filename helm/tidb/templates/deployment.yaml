@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "tidb.fullname" . }}
+  labels:
+    app: {{ template "tidb.name" . }}
+    chart: {{ template "tidb.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "tidb.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: {{ template "tidb.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: {{ template "tidb.name" . }}
+              mountPath: /tidb.toml
+              subPath: tidb.toml
+          command:
+            - --store=tikv
+            - --path=pd0:2379,pd1:2379,pd2:2379
+            - --config=/tidb.toml
+          ports:
+            - name: http1
+              containerPort: 4000 
+              protocol: TCP
+            - name: http2
+              containerPort: 10080 
+              protocol: TCP
+      volumes:
+        - name: {{ template "tidb.name" . }}
+          configMap:
+            name: {{ template "tidb.name" . }}
