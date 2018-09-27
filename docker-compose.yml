@@ -8,6 +8,7 @@ services:
     volumes:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --name=pd0
       - --client-urls=http://0.0.0.0:2379
@@ -17,6 +18,7 @@ services:
       - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
       - --data-dir=/data/pd0
       - --config=/pd.toml
+      - --log-file=/logs/pd0.log
     restart: on-failure
   pd1:
     image: pingcap/pd:latest
@@ -25,6 +27,7 @@ services:
     volumes:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --name=pd1
       - --client-urls=http://0.0.0.0:2379
@@ -34,6 +37,7 @@ services:
       - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
       - --data-dir=/data/pd1
       - --config=/pd.toml
+      - --log-file=/logs/pd1.log
     restart: on-failure
   pd2:
     image: pingcap/pd:latest
@@ -42,6 +46,7 @@ services:
     volumes:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --name=pd2
       - --client-urls=http://0.0.0.0:2379
@@ -51,18 +56,21 @@ services:
       - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
       - --data-dir=/data/pd2
       - --config=/pd.toml
+      - --log-file=/logs/pd2.log
     restart: on-failure
   tikv0:
     image: pingcap/tikv:latest
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv0:20160
       - --data-dir=/data/tikv0
       - --pd=pd0:2379,pd1:2379,pd2:2379
       - --config=/tikv.toml
+      - --log-file=/logs/tikv0.log
     depends_on:
       - "pd0"
       - "pd1"
@@ -73,12 +81,14 @@ services:
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv1:20160
       - --data-dir=/data/tikv1
       - --pd=pd0:2379,pd1:2379,pd2:2379
       - --config=/tikv.toml
+      - --log-file=/logs/tikv1.log
     depends_on:
       - "pd0"
       - "pd1"
@@ -89,12 +99,14 @@ services:
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
+      - ./logs:/logs
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv2:20160
       - --data-dir=/data/tikv2
       - --pd=pd0:2379,pd1:2379,pd2:2379
       - --config=/tikv.toml
+      - --log-file=/logs/tikv2.log
     depends_on:
       - "pd0"
       - "pd1"
@@ -108,10 +120,12 @@ services:
       - "10080:10080"
     volumes:
       - ./config/tidb.toml:/tidb.toml:ro
+      - ./logs:/logs
     command:
       - --store=tikv
       - --path=pd0:2379,pd1:2379,pd2:2379
       - --config=/tidb.toml
+      - --log-file=/logs/tidb.log
     depends_on:
       - "tikv0"
       - "tikv1"
@@ -155,12 +169,13 @@ services:
       PD_ENDPOINT: pd0:2379
     ports:
       - "8010:8010"
+    restart: on-failure
 
   # monitors
   pushgateway:
     image: prom/pushgateway:v0.3.1
     command:
-    - --log.level=error
+      - --log.level=error
     restart: on-failure
   prometheus:
     user: root

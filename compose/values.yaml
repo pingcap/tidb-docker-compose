@@ -1,4 +1,5 @@
 dataDir: ./data
+logsDir: ./logs
 # supported networkMode: bridge | host
 # host network mode is useless on Mac
 networkMode: bridge
