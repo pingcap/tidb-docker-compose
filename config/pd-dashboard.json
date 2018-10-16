@@ -62,11 +62,14 @@
   "links": [
     {
       "icon": "doc",
+      "includeVars": true,
+      "keepTime": true,
       "tags": [],
+      "targetBlank": true,
       "title": "Report",
       "tooltip": "Open a pdf report for the current dashboard",
       "type": "link",
-      "url": "http://172.16.10.49:8686/api/report/test-cluster-pd?apitoken=eyJrIjoiQkU2bmFQdjZMeTRmWVJ3UFo0bmV3Ym5zRG04Y2hmMHYiLCJuIjoiZ3JhZmFuYV9hcGlrZXkiLCJpZCI6MX0="
+      "url": "http://172.16.10.71:8686/api/report/test-cluster-pd?apitoken=eyJrIjoiNEg1WFRIbVBDVHhsclFaOEdSS2tVWDNveWNlM2RBcVkiLCJuIjoiZ3JhZmFuYV9hcGlrZXkiLCJpZCI6MX0="
     }
   ],
   "refresh": "30s",
@@ -373,6 +376,7 @@
           "targets": [
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\",namespace=~\"$namespace\",type=\"leader_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
               "step": 40
@@ -440,7 +444,7 @@
               "to": "null"
             }
           ],
-          "span": 1,
+          "span": 2,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -451,6 +455,7 @@
           "targets": [
             {
               "expr": "1 - min(pd_scheduler_store_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"leader_score\"}) / max(pd_scheduler_store_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"leader_score\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
               "step": 40
@@ -518,7 +523,7 @@
               "to": "null"
             }
           ],
-          "span": 1,
+          "span": 2,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": true,
@@ -529,6 +534,7 @@
           "targets": [
             {
               "expr": "1 - min(pd_scheduler_store_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"region_score\"}) / max(pd_scheduler_store_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"region_score\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
               "refId": "A",
@@ -549,6 +555,81 @@
           "valueName": "current"
         },
         {
+          "cacheTimeout": null,
+          "colorBackground": false,
+          "colorValue": false,
+          "colors": [
+            "#d44a3a",
+            "rgba(237, 129, 40, 0.89)",
+            "#299c46"
+          ],
+          "datasource": "${DS_TEST-CLUSTER}",
+          "format": "none",
+          "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+          },
+          "id": 97,
+          "interval": null,
+          "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "maxDataPoints": 100,
+          "nullPointMode": "connected",
+          "nullText": null,
+          "postfix": "",
+          "postfixFontSize": "50%",
+          "prefix": "",
+          "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "span": 3,
+          "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+          },
+          "tableColumn": "",
+          "targets": [
+            {
+              "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"store_up_count\"})",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "refId": "A"
+            }
+          ],
+          "thresholds": "0,1",
+          "title": "Normal Stores",
+          "type": "singlestat",
+          "valueFontSize": "100%",
+          "valueMaps": [
+            {
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ],
+          "valueName": "current"
+        },
+        {
           "columns": [
             {
               "text": "Current",
@@ -559,18 +640,17 @@
           "editable": true,
           "error": false,
           "fontSize": "100%",
-          "hideTimeOverride": false,
-          "id": 39,
+          "hideTimeOverride": true,
+          "id": 96,
           "links": [],
           "pageSize": null,
-          "repeat": null,
           "scroll": false,
           "showHeader": true,
           "sort": {
             "col": null,
             "desc": false
           },
-          "span": 2,
+          "span": 3,
           "styles": [
             {
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
@@ -597,16 +677,8 @@
           ],
           "targets": [
             {
-              "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\", type=\"store_up_count\"})",
-              "interval": "",
-              "intervalFactor": 2,
-              "legendFormat": "Up Stores",
-              "metric": "pd_cluster_status",
-              "refId": "A",
-              "step": 20
-            },
-            {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_disconnected_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Disconnect Stores",
               "refId": "B",
@@ -614,6 +686,7 @@
             },
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_unhealth_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Unhealth Stores",
               "refId": "C",
@@ -621,6 +694,7 @@
             },
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_low_space_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "LowSpace Stores",
               "refId": "D",
@@ -628,6 +702,7 @@
             },
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_down_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Down Stores",
               "refId": "E",
@@ -635,6 +710,7 @@
             },
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_offline_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Offline Stores",
               "refId": "F",
@@ -642,13 +718,15 @@
             },
             {
               "expr": "sum(pd_cluster_status{instance=\"$instance\", namespace=~\"$namespace\",type=\"store_tombstone_count\"})",
+              "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Tombstone Stores",
               "refId": "G",
               "step": 20
             }
           ],
-          "title": "Store Status",
+          "timeFrom": "1s",
+          "title": "Abnormal  Stores",
           "transform": "timeseries_aggregations",
           "transparent": false,
           "type": "table"
@@ -698,7 +776,7 @@
               "format": "time_series",
               "hide": false,
               "intervalFactor": 2,
-              "legendFormat": "strage size",
+              "legendFormat": "storage size",
               "refId": "A",
               "step": 4
             },
@@ -1046,7 +1124,7 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "span": 12,
+          "span": 6,
           "stack": false,
           "steppedLine": false,
           "targets": [
@@ -5694,5 +5772,5 @@
   },
   "timezone": "browser",
   "title": "Test-Cluster-PD",
-  "version": 3
+  "version": 55
 }
