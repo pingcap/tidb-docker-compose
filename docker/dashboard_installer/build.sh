@@ -14,4 +14,5 @@ do
     destFile=`echo ${mtpl}|awk -F"[-.]" '{print $1"."$3}'`
     cp config/${mtpl} docker/dashboard_installer/dashboard/${destFile}
 done
+cp LICENSE docker/dashboard_installer/dashboard/LICENSE
 cd docker/dashboard_installer && docker build -t ${REGISTRY}/${IMAGE_NAME}:${VERSION} .
