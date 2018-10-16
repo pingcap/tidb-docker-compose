@@ -1,6 +1,7 @@
 /values.yaml
 /generated-docker-compose.yml
 /data
+/logs
 /pd/bin
 /tikv/bin
 /tidb/bin

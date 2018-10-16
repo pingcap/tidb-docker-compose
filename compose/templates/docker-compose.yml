@@ -53,6 +53,7 @@ services:
     volumes:
       - ./config/pd.toml:/pd.toml:ro
       - {{ $.Values.dataDir }}:/data
+      - {{ $.Values.logsDir }}:/logs
     command:
       - --name=pd{{ . }}
       {{- if eq $.Values.networkMode "host" }}
@@ -69,6 +70,7 @@ services:
       - --initial-cluster={{- template "initial_cluster" $ }}
       - --data-dir=/data/pd{{ . }}
       - --config=/pd.toml
+      - --log-file=/logs/pd{{ . }}.log
     # sysctls:
     #   net.core.somaxconn: 32768
     # ulimits:
@@ -94,6 +96,7 @@ services:
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - {{ $.Values.dataDir }}:/data
+      - {{ $.Values.logsDir }}:/logs
     command:
       {{- if eq $.Values.networkMode "host" }}
       - --addr=0.0.0.0:{{ add $tikvPort . }}
@@ -105,6 +108,7 @@ services:
       - --data-dir=/data/tikv{{ . }}
       - --pd={{- template "pd_list" $ }}
       - --config=/tikv.toml
+      - --log-file=/logs/tikv{{ . }}.log
     depends_on:
       {{- range until $pdSize }}
       - "pd{{.}}"
@@ -137,10 +141,12 @@ services:
     {{- end }}
     volumes:
       - ./config/tidb.toml:/tidb.toml:ro
+      - {{ .Values.logsDir }}:/logs
     command:
       - --store=tikv
       - --path={{- template "pd_list" $ }}
       - --config=/tidb.toml
+      - --log-file=/logs/tidb.log
     depends_on:
       {{- range until $tikvSize }}
       - "tikv{{.}}"
@@ -235,6 +241,9 @@ services:
       - --web.listen-address=0.0.0.0:{{.Values.pushgateway.port}}
       - --log.level={{ .Values.pushgateway.logLevel }}
     network_mode: host
+    {{- else }}
+    command:
+      - --log.level={{ .Values.pushgateway.logLevel }}
     {{- end }}
     restart: on-failure
 
@@ -270,6 +279,8 @@ services:
       GF_SERVER_HTTP_PORT: {{ .Values.grafana.port }}
       GF_LOG_LEVEL: {{ .Values.grafana.logLevel }}
     {{- else }}
+    environment:
+      GF_LOG_LEVEL: {{ .Values.grafana.logLevel }}
     ports:
       - "{{ .Values.grafana.port }}:3000"
     {{- end }}
