@@ -281,23 +281,29 @@ services:
     {{- else }}
     environment:
       GF_LOG_LEVEL: {{ .Values.grafana.logLevel }}
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
     ports:
       - "{{ .Values.grafana.port }}:3000"
     {{- end }}
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./config/dashboards:/var/lib/grafana/dashboards
     restart: on-failure
   dashboard-installer:
+    {{- if .Values.dashboardInstaller.image }}
     image: {{ .Values.dashboardInstaller.image }}
+    {{- else }}
+    image: tidb-dashboard-installer:latest
+    build:
+      context: {{ .Values.dashboardInstaller.buildPath | default "./dashboard-installer" }}
+      dockerfile: {{ .Values.dashboardInstaller.dockerfile | default "Dockerfile" }}
+    {{- end }}
     {{- if eq .Values.networkMode "host" }}
     network_mode: host
     command: ["127.0.0.1:{{.Values.grafana.port}}"]
     {{- else }}
     command: ["grafana:3000"]
     {{- end }}
-    volumes:
-      - ./config/grafana-datasource.json:/datasource.json:ro
-      - ./config/pd-dashboard.json:/pd.json:ro
-      - ./config/tikv-dashboard.json:/tikv.json:ro
-      - ./config/tidb-dashboard.json:/tidb.json:ro
-      - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
   {{- end -}}

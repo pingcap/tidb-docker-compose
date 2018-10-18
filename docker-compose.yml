@@ -194,19 +194,18 @@ services:
       - ./data:/data
     restart: on-failure
   grafana:
-    image: grafana/grafana:4.6.3
+    image: grafana/grafana:5.3.0
     environment:
       GF_LOG_LEVEL: error
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./config/dashboards:/var/lib/grafana/dashboards
     ports:
       - "3000:3000"
     restart: on-failure
   dashboard-installer:
     image: pingcap/tidb-dashboard-installer:v2.0.0
     command: ["grafana:3000"]
-    volumes:
-      - ./config/grafana-datasource.json:/datasource.json:ro
-      - ./config/pd-dashboard.json:/pd.json:ro
-      - ./config/tikv-dashboard.json:/tikv.json:ro
-      - ./config/tidb-dashboard.json:/tidb.json:ro
-      - ./config/overview-dashboard.json:/overview.json:ro
     restart: on-failure
