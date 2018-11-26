@@ -2,35 +2,7 @@
 {{- $tikvSize := .Values.tikv.size | int }}
 {{- $pdPort := .Values.pd.port | int }}
 {{- $pdPeerPort := add $pdPort 10000 }}
-{{- $tikvPort := .Values.tikv.port | int }}
-{{- $tisparkWorkerCount := .Values.tispark.workerCount | int }}
-{{- define "initial_cluster" }}
-  {{- range until (.Values.pd.size | int) }}
-    {{- if . -}}
-      ,
-    {{- end -}}
-    pd{{ . }}=http://
-    {{- if eq $.Values.networkMode "host" -}}
-      127.0.0.1:{{add (add ($.Values.pd.port | int) 10000) . }}
-    {{- else -}}
-      pd{{ . }}:2380
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
-{{- define "pd_list" }}
-  {{- range until (.Values.pd.size | int) }}
-    {{- if . -}}
-      ,
-    {{- end -}}
-    {{- if eq $.Values.networkMode "host" -}}
-      127.0.0.1:{{ add ($.Values.pd.port | int) . }}
-    {{- else -}}
-      pd{{ . }}:2379
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-
+{{- $tikvPort := .Values.tikv.port | int -}}
 version: '2.1'
 
 services:
@@ -185,7 +157,7 @@ services:
       - "tikv{{.}}"
       {{- end }}
     restart: on-failure
-  {{- range until $tisparkWorkerCount }}
+  {{- range until ( .Values.tispark.workerCount | int ) }}
   tispark-slave{{ . }}:
     {{- if $.Values.tispark.image }}
     image: {{ $.Values.tispark.image }}
