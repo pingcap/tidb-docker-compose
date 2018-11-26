@@ -266,16 +266,28 @@ groups:
       summary: TiKV coprocessor outdated request wait seconds
 
   - alert: TiKV_coprocessor_request_error
-    expr: increase(tikv_coprocessor_request_error[10m]) > 100
+    expr: increase(tikv_coprocessor_request_error{reason!="lock"}[10m]) > 100
     for: 1m
     labels:
       env: test-cluster
       level: warning
-      expr:  increase(tikv_coprocessor_request_error[10m]) > 100
+      expr:  increase(tikv_coprocessor_request_error{reason!="lock"}[10m]) > 100
     annotations:
-      description: 'cluster: test-cluster, type: {{ $labels.type }}, instance: {{ $labels.instance }}, values: {{ $value }}'
+      description: 'cluster: test-cluster, reason: {{ $labels.reason }}, instance: {{ $labels.instance }}, values: {{ $value }}'
       value: '{{ $value }}'
-      summary: TiKV coprocessor_request_error
+      summary: TiKV coprocessor request error
+
+  - alert: TiKV_coprocessor_request_lock_error
+    expr: increase(tikv_coprocessor_request_error{reason="lock"}[10m]) > 10000
+    for: 1m
+    labels:
+      env: test-cluster
+      level: warning
+      expr:  increase(tikv_coprocessor_request_error{reason="lock"}[10m]) > 10000
+    annotations:
+      description: 'cluster: test-cluster, reason: {{ $labels.reason }}, instance: {{ $labels.instance }}, values: {{ $value }}'
+      value: '{{ $value }}'
+      summary: TiKV coprocessor request lock error
 
   - alert: TiKV_coprocessor_pending_request
     expr: delta( tikv_coprocessor_pending_request[10m]) > 5000
@@ -324,3 +336,15 @@ groups:
       description: 'cluster: test-cluster, type: {{ $labels.type }}, instance: {{ $labels.instance }}, values: {{ $value }}'
       value: '{{ $value }}'
       summary: TiKV low_space and add_region
+
+  - alert: TiKV_approximate_region_size
+    expr: histogram_quantile(0.99, sum(rate(tikv_raftstore_region_size_bucket[1m])) by (le)) > 1073741824
+    for: 1m
+    labels:
+      env: test-cluster
+      level: warning
+      expr: histogram_quantile(0.99, sum(rate(tikv_raftstore_region_size_bucket[1m])) by (le)) > 1073741824
+    annotations:
+      description: 'cluster: test-cluster, type: {{ $labels.type }}, instance: {{ $labels.instance }}, values: {{ $value }}'
+      value: '{{ $value }}'
+      summary: TiKV approximate region size is more than 1GB
