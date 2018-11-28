@@ -204,7 +204,6 @@ services:
     restart: on-failure
   {{- end }}
 
-  # monitors
   {{- if .Values.prometheus }}
   pushgateway:
     image: {{ .Values.pushgateway.image }}
