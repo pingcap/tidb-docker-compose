@@ -193,17 +193,21 @@ services:
       - ./config/tidb.rules.yml:/etc/prometheus/tidb.rules.yml:ro
       - ./data:/data
     restart: on-failure
+  mysql:
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    restart: on-failure
   grafana:
     image: grafana/grafana:5.3.0
     environment:
-      GF_LOG_LEVEL: error
-      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-    volumes:
-      - ./config/grafana:/etc/grafana
-      - ./config/dashboards:/var/lib/grafana/dashboards
+      GF_SECURITY_ADMIN_PASSWORD: secret
     ports:
       - "3000:3000"
+    depends_on:
+      - "mysql"
     restart: on-failure
   dashboard-installer:
     image: pingcap/tidb-dashboard-installer:v2.0.0
