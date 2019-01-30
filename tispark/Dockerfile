@@ -12,6 +12,7 @@ ENV SPARK_VERSION=2.3.2 \
     SPARK_MASTER_WEBUI_PORT=8080
 
 ADD R /TiSparkR
+ADD ../tispark-tests /opt
 
 # base image only contains busybox version nohup and ps
 # spark scripts needs nohup in coreutils and ps in procps
