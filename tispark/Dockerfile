@@ -31,8 +31,8 @@ RUN apk --no-cache add \
 
 RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
     && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
-    && cp /opt/tispark-tests/tests/session.py ${SPARK_HOME}/python/pyspark/sql/ \
 	&& ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME} \
+    && cp /opt/tispark-tests/tests/session.py ${SPARK_HOME}/python/pyspark/sql/ \
 	&& wget -q http://download.pingcap.org/tispark-latest-linux-amd64.tar.gz \
 	&& tar zxf ./tispark-latest-linux-amd64.tar.gz -C /opt/ \
 	&& cp /opt/core/target/tispark-core-${TISPARK_VERSION}-jar-with-dependencies.jar ${SPARK_HOME}/jars \
