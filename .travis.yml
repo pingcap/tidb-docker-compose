@@ -20,5 +20,5 @@ before_install:
 
 script:
   - docker ps -a --format="{{.Names}} {{.Image}} {{.Status}}" | grep -v 'Up' | grep -v 'Exited (0)' | awk '{print} END {if (NR>0) {exit 1;}}'
-  - docker-compose -f docker-compose-test.yml run --rm tispark-tests bash /opt/spark/tests/loaddata.sh  # add some data for tests
+  - docker-compose -f docker-compose-test.yml run --rm tispark-tests bash /opt/spark-tests/tests/loaddata.sh  # add some data for tests
   # - docker-compose -f docker-compose-test.yml run --rm tispark-tests /opt/spark/bin/spark-submit /opt/spark/tests/tests.py  # run tispark tests
