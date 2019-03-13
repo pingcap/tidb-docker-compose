@@ -264,6 +264,11 @@ services:
   dashboard-installer:
     {{- if .Values.dashboardInstaller.image }}
     image: {{ .Values.dashboardInstaller.image }}
+    volumes:
+      - ./dashboard-installer/dashboards/:/dashboards
+    entrypoint:
+      - /dashboards/tidb-dashboard-installer.sh
+    working_dir: /dashboards
     {{- else }}
     image: tidb-dashboard-installer:latest
     build:
