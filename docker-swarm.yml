@@ -80,7 +80,7 @@ services:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
       - ./logs:/logs
-    entrypoint: [ "/bin/sh", "-x", "-c", "set ; /tikv-server --advertise-addr=$$HOSTNAME:20160  --addr=0.0.0.0:20160 --data-dir=/data/tikv$$TASK_SLOT --pd=pd0:2379,pd1:2379,pd2:2379 --config=/tikv.toml --log-file=/logs/tikv$$TASK_SLOT.log" ]
+    entrypoint: [ "/bin/sh", "-c", "/tikv-server --advertise-addr=$$HOSTNAME:20160  --addr=0.0.0.0:20160 --data-dir=/data/tikv$$TASK_SLOT --pd=pd0:2379,pd1:2379,pd2:2379 --config=/tikv.toml --log-file=/logs/tikv$$TASK_SLOT.log" ]
     depends_on:
       - "pd0"
       - "pd1"
@@ -126,7 +126,11 @@ services:
       - "8080:8080"
     depends_on:
       - "tikv"
-  tispark-slave0:
+    deploy:
+        replicas: 0
+        restart_policy:
+            condition: on-failure
+  tispark-slave:
     image: pingcap/tispark:latest
     command:
       - /opt/spark/sbin/start-slave.sh
@@ -139,6 +143,10 @@ services:
       - "38081:38081"
     depends_on:
       - tispark-master
+    deploy:
+        replicas: 0
+        restart_policy:
+            condition: on-failure
 
   tidb-vision:
     image: pingcap/tidb-vision:latest
@@ -181,3 +189,6 @@ services:
   dashboard-installer:
     image: pingcap/tidb-dashboard-installer:v2.0.0
     command: ["grafana:3000"]
+    deploy:
+        restart_policy:
+            condition: on-failure
