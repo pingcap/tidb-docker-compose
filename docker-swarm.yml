@@ -115,7 +115,7 @@ services:
     depends_on:
       - "tikv"
     deploy:
-        replicas: 0
+        replicas: 1
   tispark-slave:
     image: pingcap/tispark:latest
     command:
@@ -130,7 +130,7 @@ services:
     depends_on:
       - tispark-master
     deploy:
-        replicas: 0
+        replicas: 1
 
   tidb-vision:
     image: pingcap/tidb-vision:latest
