@@ -27,6 +27,73 @@ Default user/password: admin/admin
 * Access Spark Web UI at http://localhost:8080
   and access [TiSpark](https://github.com/pingcap/tispark) through spark://127.0.0.1:7077
 
+## Docker Swarm
+
+You can also use Docker Swarm to deploy a TiDB Platform cluster, and then you can scale the service using `docker stack` commands.
+
+```bash
+$ docker swarm init
+$ docker stack deploy tidb -c docker-swarm.yml
+$ mysql -h 127.0.0.1 -P 4000 -u root
+```
+
+After deploying the stack, you can scale the number of TiDB Server instances in the cluster like this:
+
+```bash
+$ docker service scale tidb_tidb=2
+```
+
+Docker Swarm automatically load-balances across the containers that implement a scaled service, which you can see if you execute `select @@hostname` several times:
+
+```bash
+$ mysql -h 127.0.0.1 -P 4000 -u root -te 'select @@hostname'
++--------------+
+| @@hostname   |
++--------------+
+| 340092e0ec9e |
++--------------+
+$ mysql -h 127.0.0.1 -P 4000 -u root -te 'select @@hostname'
++--------------+
+| @@hostname   |
++--------------+
+| e6f05ffe6274 |
++--------------+
+$ mysql -h 127.0.0.1 -P 4000 -u root -te 'select @@hostname'
++--------------+
+| @@hostname   |
++--------------+
+| 340092e0ec9e |
++--------------+
+```
+
+If you want to connect to specific backend instances, for example to test concurrency by ensuring that you are connecting to distinct instances of tidb-server, you can use the `docker service ps` command to assemble a hostname for each container:
+
+```bash
+$ docker service ps --no-trunc --format '{{.Name}}.{{.ID}}' tidb_tidb
+tidb_tidb.1.x3sc2sd66a88phsj103ohr6qq
+tidb_tidb.2.lk53apndq394cega46at853zw
+```
+
+To be able to resolve those hostnames, it's easiest to run the MySQL client in a container that has access to the swarm network:
+
+```bash
+$ docker run --rm --network=tidb_default arey/mysql-client -h tidb_tidb.1.x3sc2sd66a88phsj103ohr6qq -P 4000 -u root -t -e 'select @@version'
++-----------------------------------------+
+| @@version                               |
++-----------------------------------------+
+| 5.7.25-TiDB-v3.0.0-beta.1-40-g873d9514b |
++-----------------------------------------+
+```
+
+To loop through all instances of TiDB Server, you can use a bash loop like this:
+
+```bash
+for host in $(docker service ps --no-trunc --format '{{.Name}}.{{.ID}}' tidb_tidb)
+    do docker run --rm --network tidb_default arey/mysql-client \
+        -h "$host" -P 4000 -u root -te "select @@hostname"
+done
+```
+
 ## Customize TiDB Cluster
 
 ### Configuration
@@ -37,7 +104,7 @@ Default user/password: admin/admin
 
 If you find these configuration files outdated or mismatch with TiDB version, you can copy these files from their upstream repos and change their metrics addr with `pushgateway:9091`. Also `max-open-files` are configured to `1024` in tikv.toml to simplify quick start on Linux, because setting up ulimit on Linux with docker is quite tedious.
 
-And config/*-dashboard.json are copied from [TiDB-Ansible repo](https://github.com/pingcap/tidb-ansible/tree/master/scripts)
+And config/\*-dashboard.json are copied from [TiDB-Ansible repo](https://github.com/pingcap/tidb-ansible/tree/master/scripts)
 
 You can customize TiDB cluster configuration by editing docker-compose.yml and the above config files if you know what you're doing.
 
