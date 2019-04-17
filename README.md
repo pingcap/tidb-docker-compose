@@ -32,7 +32,7 @@ Default user/password: admin/admin
 You can also use Docker Swarm to deploy a TiDB Platform cluster, and then you can scale the service using `docker stack` commands.
 
 ```bash
-$ docker swarm init
+$ docker swarm init # if your docker daemon is not already part of a swarm
 $ docker stack deploy tidb -c docker-swarm.yml
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
@@ -93,6 +93,8 @@ for host in $(docker service ps --no-trunc --format '{{.Name}}.{{.ID}}' tidb_tid
         -h "$host" -P 4000 -u root -te "select @@hostname"
 done
 ```
+
+To stop all services and remove all containers in the TiDB stack, execute `docker stack rm tidb`.
 
 ## Customize TiDB Cluster
 
