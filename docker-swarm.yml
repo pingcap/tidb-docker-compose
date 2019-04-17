@@ -160,7 +160,7 @@ services:
       - ./config/tidb.rules.yml:/etc/prometheus/tidb.rules.yml:ro
       - ./data:/data
   grafana:
-    image: grafana/grafana:5.3.0
+    image: grafana/grafana:6.0.1
     environment:
       GF_LOG_LEVEL: error
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
@@ -170,9 +170,3 @@ services:
       - ./config/dashboards:/var/lib/grafana/dashboards
     ports:
       - "3000:3000"
-  dashboard-installer:
-    image: pingcap/tidb-dashboard-installer:v2.0.0
-    command: ["grafana:3000"]
-    deploy:
-        restart_policy:
-            condition: on-failure
