@@ -195,13 +195,15 @@ services:
     restart: on-failure
   grafana:
     image: grafana/grafana:6.0.1
+    user: "0"
     environment:
       GF_LOG_LEVEL: error
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
       GF_PATHS_CONFIG: /etc/grafana/grafana.ini
     volumes:
       - ./config/grafana:/etc/grafana
-      - ./config/dashboards:/var/lib/grafana/dashboards
+      - ./config/dashboards:/tmp/dashboards
+      - ./data/grafana:/var/lib/grafana
     ports:
       - "3000:3000"
     restart: on-failure
