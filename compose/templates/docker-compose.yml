@@ -244,6 +244,7 @@ services:
   {{- if .Values.grafana }}
   grafana:
     image: {{ .Values.grafana.image }}
+    user: "0"
     {{- if eq .Values.networkMode "host" }}
     network_mode: host
     environment:
@@ -259,7 +260,8 @@ services:
     {{- end }}
     volumes:
       - ./config/grafana:/etc/grafana
-      - ./config/dashboards:/var/lib/grafana/dashboards
+      - ./config/dashboards:/tmp/dashboards
+      - ./data/grafana:/var/lib/grafana
     restart: on-failure
   dashboard-installer:
     {{- if .Values.dashboardInstaller.image }}

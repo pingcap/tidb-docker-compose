@@ -18,9 +18,7 @@ $ docker-compose up -d
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
 
-* Access monitor at http://localhost:3000
-
-Default user/password: admin/admin
+* Access monitor at http://localhost:3000 (login with admin/admin if you want to modify grafana)
 
 * Access [tidb-vision](https://github.com/pingcap/tidb-vision) at http://localhost:8010
 
