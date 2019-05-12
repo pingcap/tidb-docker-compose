@@ -37,7 +37,7 @@ tidb:
   # dockerfile: Dockerfile
   mysqlPort: "4000"
   statusPort: "10080"
-  enableBinlog: true
+  enableBinlog: false
 
 pump:
   size: 3
