@@ -190,7 +190,7 @@ services:
     environment:
       ZOO_MY_ID: {{ add . 1 }}
       ZOO_PORT: {{ add $zooPort . }}
-      ZOO_SERVERS: {{- template "zoo_servers" $ }}
+      ZOO_SERVERS: {{ template "zoo_servers" $ }}
     volumes:
       - {{ $.Values.dataDir }}/zoo{{ . }}/data:/data
       - {{ $.Values.dataDir }}/zoo{{ . }}/datalog:/datalog
