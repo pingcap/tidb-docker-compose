@@ -1,6 +1,6 @@
 ---
 # Source: tidb-docker-compose/templates/docker-compose.yml
-
+# dashboard-installer has been deleted, because we don't need it any more in docker-compose model
 version: '2.1'
 
 services:
