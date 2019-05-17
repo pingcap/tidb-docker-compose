@@ -67,7 +67,7 @@ zookeeper:
 kafka:
   size: 3
   image: wurstmeister/kafka:2.12-2.1.1
-  # If you want to consume the kafka message outside the docker container,
+  # If you want to consume the kafka messages outside the docker containers,
   # Please update the advertisedHostName with your docker host IP
   advertisedHostName:
   port: 9092
