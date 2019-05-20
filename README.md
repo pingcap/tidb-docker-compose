@@ -101,6 +101,8 @@ To stop all services and remove all containers in the TiDB stack, execute `docke
 * config/pd.toml is copied from [PD repo](https://github.com/pingcap/pd/tree/master/conf)
 * config/tikv.toml is copied from [TiKV repo](https://github.com/pingcap/tikv/tree/master/etc)
 * config/tidb.toml is copied from [TiDB repo](https://github.com/pingcap/tidb/tree/master/config)
+* config/pump.toml is copied from [TiDB-Binlog repo](https://github.com/pingcap/tidb-binlog/tree/master/cmd/pump)
+* config/drainer.toml is copied from [TiDB-Binlog repo](https://github.com/pingcap/tidb-binlog/tree/master/cmd/drainer)
 
 If you find these configuration files outdated or mismatch with TiDB version, you can copy these files from their upstream repos and change their metrics addr with `pushgateway:9091`. Also `max-open-files` are configured to `1024` in tikv.toml to simplify quick start on Linux, because setting up ulimit on Linux with docker is quite tedious.
 
@@ -129,13 +131,23 @@ $ vi compose/values.yaml # custom cluster size, docker image, port mapping etc
 $ helm template compose > generated-docker-compose.yaml
 $ docker-compose -f generated-docker-compose.yaml pull # Get the latest Docker images
 $ docker-compose -f generated-docker-compose.yaml up -d
+
+# If you want to Bring up TiDB cluster with Binlog support
+$ vi compose/values.yaml # set tidb.enableBinlog to true
+$ helm template compose > generated-docker-compose-binlog.yaml
+$ docker-compose -f generated-docker-compose-binlog.yaml up -d  # or you can use 'docker-compose-binlog.yml' file directly
+
+# Note: If the value of drainer.destDBType is "kafka" and 
+# you want to consume the kafka messages outside the docker containers,
+# please update the kafka.advertisedHostName with your docker host IP in compose/values.yaml and 
+# regenerate the 'generated-docker-compose-binlog.yaml' file
 ```
 
 You can build docker image yourself for development test.
 
 * Build from binary
 
-  For pd, tikv and tidb, comment their `image` and `buildPath` fields out. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server and tidb/bin/tidb-server.
+  For pd, tikv, tidb, pump and drainer comment their `image` and `buildPath` fields out. And then copy their binary files to pd/bin/pd-server, tikv/bin/tikv-server, tidb/bin/tidb-server, tidb-binlog/bin/pump and tidb-binlog/bin/drainer.
 
   These binary files can be built locally or downloaded from https://download.pingcap.org/tidb-latest-linux-amd64.tar.gz
 

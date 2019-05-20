@@ -37,6 +37,40 @@ tidb:
   # dockerfile: Dockerfile
   mysqlPort: "4000"
   statusPort: "10080"
+  enableBinlog: false
+
+pump:
+  size: 3
+  image: pingcap/tidb-binlog:latest
+
+  # If you want to build pump image from source, leave image empty and specify pump source directory
+  # and its dockerfile name
+  # buildPath: ./pump
+  # dockerfile: Dockerfile
+  # when network_mode is host, pump port ranges [port, port+size)
+  port: 8250
+
+drainer:
+  image: pingcap/tidb-binlog:latest
+
+  # If you want to build drainer image from source, leave image empty and specify drainer source directory
+  # and its dockerfile name
+  # buildPath: ./drainer
+  # dockerfile: Dockerfile
+  destDBType: "kafka"
+
+zookeeper:
+  size: 3
+  image: zookeeper:latest
+  port: 2181
+
+kafka:
+  size: 3
+  image: wurstmeister/kafka:2.12-2.1.1
+  # If you want to consume the kafka messages outside the docker containers,
+  # Please update the advertisedHostName with your docker host IP
+  advertisedHostName:
+  port: 9092
 
 tispark:
   image: pingcap/tispark:latest

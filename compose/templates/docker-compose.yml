@@ -3,6 +3,13 @@
 {{- $pdPort := .Values.pd.port | int }}
 {{- $pdPeerPort := add $pdPort 10000 }}
 {{- $tikvPort := .Values.tikv.port | int -}}
+{{- $pumpSize := .Values.pump.size | int }}
+{{- $pumpPort := .Values.pump.port | int }}
+{{- $drainerPort := .Values.drainer.port | int }}
+{{- $zooSize := .Values.zookeeper.size | int }}
+{{- $zooPort := .Values.zookeeper.port | int }}
+{{- $kafkaSize := .Values.kafka.size | int }}
+{{- $kafkaPort := .Values.kafka.port | int }}
 version: '2.1'
 
 services:
@@ -94,6 +101,138 @@ services:
     restart: on-failure
   {{ end }}
 
+  {{- if and .Values.tidb .Values.tidb.enableBinlog }}
+  {{- range until $pumpSize }}
+  pump{{ . }}:
+    {{- if $.Values.pump.image }}
+    image: {{ $.Values.pump.image }}
+    {{- else }}
+    image: tidb-binlog:latest
+    build:
+      context: {{ $.Values.pump.buildPath | default "./tidb-binlog" }}
+      dockerfile: {{ $.Values.pump.dockerfile | default "Dockerfile" }}
+    {{- end }}
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- end }}
+    volumes:
+      - ./config/pump.toml:/pump.toml:ro
+      - {{ $.Values.dataDir }}:/data
+      - {{ $.Values.logsDir }}:/logs
+    command:
+      - /pump
+      {{- if eq $.Values.networkMode "host" }}
+      - --addr=0.0.0.0:{{ add $pumpPort . }}
+      - --advertise-addr=127.0.0.1:{{ add $pumpPort . }}
+      {{- else }}
+      - --addr=0.0.0.0:8250
+      - --advertise-addr=pump{{ . }}:8250
+      {{- end }}
+      - --data-dir=/data/pump{{ . }}
+      - --log-file=/logs/pump{{ . }}.log
+      - --node-id=pump{{ . }}
+      - --pd-urls={{- template "pd_urls" $ }}
+      - --config=/pump.toml
+    depends_on:
+      {{- range until $pdSize }}
+      - "pd{{.}}"
+      {{- end }}
+    restart: on-failure
+  {{ end }}
+  drainer:
+    {{- if $.Values.drainer.image }}
+    image: {{ $.Values.drainer.image }}
+    {{- else }}
+    image: tidb-binlog:latest
+    build:
+      context: {{ $.Values.drainer.buildPath | default "./tidb-binlog" }}
+      dockerfile: {{ $.Values.drainer.dockerfile | default "Dockerfile" }}
+    {{- end }}
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- end }}
+    volumes:
+      - ./config/drainer.toml:/drainer.toml:ro
+      - {{ $.Values.dataDir }}:/data
+      - {{ $.Values.logsDir }}:/logs
+    command:
+      - /drainer
+      - --addr=0.0.0.0:8249
+      - --data-dir=/data/data.drainer
+      - --log-file=/logs/drainer.log
+      - --pd-urls={{- template "pd_urls" $ }}
+      - --config=/drainer.toml
+      - --initial-commit-ts=0
+      {{- if eq $.Values.drainer.destDBType "kafka" }}
+      - --dest-db-type=kafka
+      {{- end }}
+    depends_on:
+      {{- range until $pdSize }}
+      - "pd{{ . }}"
+      {{- end }}
+      {{- if eq $.Values.drainer.destDBType "kafka" }}
+      {{- range until $kafkaSize }}
+      - "kafka{{ . }}"
+      {{- end }}
+      {{- end }}
+    restart: on-failure
+
+  {{- if eq $.Values.drainer.destDBType "kafka" }}
+  {{ range until $zooSize }}
+  zoo{{ . }}:
+    image: zookeeper:latest
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- else }}
+    ports:
+      - "{{ add $zooPort . }}:{{ add $zooPort . }}"
+    {{- end }}
+    environment:
+      ZOO_MY_ID: {{ add . 1 }}
+      ZOO_PORT: {{ add $zooPort . }}
+      ZOO_SERVERS: {{ template "zoo_servers" $ }}
+    volumes:
+      - {{ $.Values.dataDir }}/zoo{{ . }}/data:/data
+      - {{ $.Values.dataDir }}/zoo{{ . }}/datalog:/datalog
+    restart: on-failure
+  {{ end }}
+
+  {{- range until $kafkaSize }}
+  kafka{{ . }}:
+    image: {{ $.Values.kafka.image }}
+    {{- if eq $.Values.networkMode "host" }}
+    network_mode: host
+    {{- else }}
+    ports:
+      - "{{ add . $kafkaPort }}:{{ add . $kafkaPort }}"
+    {{- end }}
+    environment:
+      KAFKA_BROKER_ID: {{ add . 1 }}
+      KAFKA_LOG_DIRS: /data/kafka-logs
+      {{- if $.Values.kafka.advertisedHostName }}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://{{ $.Values.kafka.advertisedHostName }}:{{ add . $kafkaPort }}
+      {{- else }}
+      {{- if eq $.Values.networkMode "host" }}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:{{ add . $kafkaPort }}
+      {{- else }}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka{{ . }}:{{ add . $kafkaPort }}
+      {{- end }}
+      {{- end }}
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:{{ add . $kafkaPort }}
+      KAFKA_ZOOKEEPER_CONNECT: {{ template "zoo_connect" $ }}
+    volumes:
+      - {{ $.Values.dataDir }}/kafka-logs/kafka{{ . }}:/data/kafka-logs
+      - {{ $.Values.logsDir }}/kafka{{ . }}:/opt/kafka/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      {{- range until $zooSize }}
+      - "zoo{{ . }}"
+      {{- end }}
+    restart: on-failure
+  {{- end }}
+  {{- end }}
+  {{ end }}
+
   {{- if .Values.tidb }}
   tidb:
     {{- if .Values.tidb.image }}
@@ -119,9 +258,17 @@ services:
       - --path={{- template "pd_list" $ }}
       - --config=/tidb.toml
       - --log-file=/logs/tidb.log
+      {{- if .Values.tidb.enableBinlog }}
+      - --enable-binlog=true
+      {{- end }}
     depends_on:
       {{- range until $tikvSize }}
       - "tikv{{.}}"
+      {{- end }}
+      {{- if .Values.tidb.enableBinlog }}
+      {{- range until $pumpSize }}
+      - "pump{{.}}"
+      {{- end }}
       {{- end }}
     # sysctls:
     #   net.core.somaxconn: 32768

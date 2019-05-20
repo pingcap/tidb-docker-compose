@@ -1,0 +1,447 @@
+---
+# Source: tidb-docker-compose/templates/docker-compose.yml
+# dashboard-installer has been deleted, because we don't need it any more in docker-compose model
+version: '2.1'
+
+services:
+  pd0:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --name=pd0
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd0:2379
+      - --advertise-peer-urls=http://pd0:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd0
+      - --config=/pd.toml
+      - --log-file=/logs/pd0.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  pd1:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --name=pd1
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd1:2379
+      - --advertise-peer-urls=http://pd1:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd1
+      - --config=/pd.toml
+      - --log-file=/logs/pd1.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  pd2:
+    image: pingcap/pd:latest
+    ports:
+      - "2379"
+    volumes:
+      - ./config/pd.toml:/pd.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --name=pd2
+      - --client-urls=http://0.0.0.0:2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-client-urls=http://pd2:2379
+      - --advertise-peer-urls=http://pd2:2380
+      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --data-dir=/data/pd2
+      - --config=/pd.toml
+      - --log-file=/logs/pd2.log
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv0:
+    image: pingcap/tikv:latest
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv0:20160
+      - --data-dir=/data/tikv0
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv0.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv1:
+    image: pingcap/tikv:latest
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv1:20160
+      - --data-dir=/data/tikv1
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv1.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tikv2:
+    image: pingcap/tikv:latest
+    volumes:
+      - ./config/tikv.toml:/tikv.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - --addr=0.0.0.0:20160
+      - --advertise-addr=tikv2:20160
+      - --data-dir=/data/tikv2
+      - --pd=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tikv.toml
+      - --log-file=/logs/tikv2.log
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  pump0:
+    image: pingcap/tidb-binlog:latest
+    volumes:
+      - ./config/pump.toml:/pump.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - /pump
+      - --addr=0.0.0.0:8250
+      - --advertise-addr=pump0:8250
+      - --data-dir=/data/pump0
+      - --log-file=/logs/pump0.log
+      - --node-id=pump0
+      - --pd-urls=http://pd0:2379,http://pd1:2379,http://pd2:2379
+      - --config=/pump.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  
+  pump1:
+    image: pingcap/tidb-binlog:latest
+    volumes:
+      - ./config/pump.toml:/pump.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - /pump
+      - --addr=0.0.0.0:8250
+      - --advertise-addr=pump1:8250
+      - --data-dir=/data/pump1
+      - --log-file=/logs/pump1.log
+      - --node-id=pump1
+      - --pd-urls=http://pd0:2379,http://pd1:2379,http://pd2:2379
+      - --config=/pump.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  
+  pump2:
+    image: pingcap/tidb-binlog:latest
+    volumes:
+      - ./config/pump.toml:/pump.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - /pump
+      - --addr=0.0.0.0:8250
+      - --advertise-addr=pump2:8250
+      - --data-dir=/data/pump2
+      - --log-file=/logs/pump2.log
+      - --node-id=pump2
+      - --pd-urls=http://pd0:2379,http://pd1:2379,http://pd2:2379
+      - --config=/pump.toml
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+    restart: on-failure
+  
+  drainer:
+    image: pingcap/tidb-binlog:latest
+    volumes:
+      - ./config/drainer.toml:/drainer.toml:ro
+      - ./data:/data
+      - ./logs:/logs
+    command:
+      - /drainer
+      - --addr=0.0.0.0:8249
+      - --data-dir=/data/data.drainer
+      - --log-file=/logs/drainer.log
+      - --pd-urls=http://pd0:2379,http://pd1:2379,http://pd2:2379
+      - --config=/drainer.toml
+      - --initial-commit-ts=0
+      - --dest-db-type=kafka
+    depends_on:
+      - "pd0"
+      - "pd1"
+      - "pd2"
+      - "kafka0"
+      - "kafka1"
+      - "kafka2"
+    restart: on-failure
+  
+  zoo0:
+    image: zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zoo0:2888:3888 server.2=zoo1:2888:3888 server.3=zoo2:2888:3888
+    volumes:
+      - ./data/zoo0/data:/data
+      - ./data/zoo0/datalog:/datalog
+    restart: on-failure
+  
+  zoo1:
+    image: zookeeper:latest
+    ports:
+      - "2182:2182"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_PORT: 2182
+      ZOO_SERVERS: server.1=zoo0:2888:3888 server.2=zoo1:2888:3888 server.3=zoo2:2888:3888
+    volumes:
+      - ./data/zoo1/data:/data
+      - ./data/zoo1/datalog:/datalog
+    restart: on-failure
+  
+  zoo2:
+    image: zookeeper:latest
+    ports:
+      - "2183:2183"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_PORT: 2183
+      ZOO_SERVERS: server.1=zoo0:2888:3888 server.2=zoo1:2888:3888 server.3=zoo2:2888:3888
+    volumes:
+      - ./data/zoo2/data:/data
+      - ./data/zoo2/datalog:/datalog
+    restart: on-failure
+  
+  kafka0:
+    image: wurstmeister/kafka:2.12-2.1.1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG_DIRS: /data/kafka-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka0:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zoo0:2181,zoo1:2182,zoo2:2183
+    volumes:
+      - ./data/kafka-logs/kafka0:/data/kafka-logs
+      - ./logs/kafka0:/opt/kafka/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "zoo0"
+      - "zoo1"
+      - "zoo2"
+    restart: on-failure
+  kafka1:
+    image: wurstmeister/kafka:2.12-2.1.1
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_LOG_DIRS: /data/kafka-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zoo0:2181,zoo1:2182,zoo2:2183
+    volumes:
+      - ./data/kafka-logs/kafka1:/data/kafka-logs
+      - ./logs/kafka1:/opt/kafka/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "zoo0"
+      - "zoo1"
+      - "zoo2"
+    restart: on-failure
+  kafka2:
+    image: wurstmeister/kafka:2.12-2.1.1
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_LOG_DIRS: /data/kafka-logs
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_ZOOKEEPER_CONNECT: zoo0:2181,zoo1:2182,zoo2:2183
+    volumes:
+      - ./data/kafka-logs/kafka2:/data/kafka-logs
+      - ./logs/kafka2:/opt/kafka/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "zoo0"
+      - "zoo1"
+      - "zoo2"
+    restart: on-failure
+  
+  tidb:
+    image: pingcap/tidb:latest
+    ports:
+      - "4000:4000"
+      - "10080:10080"
+    volumes:
+      - ./config/tidb.toml:/tidb.toml:ro
+      - ./logs:/logs
+    command:
+      - --store=tikv
+      - --path=pd0:2379,pd1:2379,pd2:2379
+      - --config=/tidb.toml
+      - --log-file=/logs/tidb.log
+      - --enable-binlog=true
+    depends_on:
+      - "tikv0"
+      - "tikv1"
+      - "tikv2"
+      - "pump0"
+      - "pump1"
+      - "pump2"
+    # sysctls:
+    #   net.core.somaxconn: 32768
+    # ulimits:
+    #   nofile:
+    #     soft: 1000000
+    #     hard: 1000000
+    restart: on-failure
+  
+  tispark-master:
+    image: pingcap/tispark:latest
+    command:
+      - /opt/spark/sbin/start-master.sh
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    environment:
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    depends_on:
+      - "tikv0"
+      - "tikv1"
+      - "tikv2"
+    restart: on-failure
+  tispark-slave0:
+    image: pingcap/tispark:latest
+    command:
+      - /opt/spark/sbin/start-slave.sh
+      - spark://tispark-master:7077
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+    environment:
+      SPARK_WORKER_WEBUI_PORT: 38081
+    ports:
+      - "38081:38081"
+    depends_on:
+      - tispark-master
+    restart: on-failure
+  
+  tidb-vision:
+    image: pingcap/tidb-vision:latest
+    environment:
+      PD_ENDPOINT: pd0:2379
+    ports:
+      - "8010:8010"
+    restart: on-failure
+  pushgateway:
+    image: prom/pushgateway:v0.3.1
+    command:
+      - --log.level=error
+    restart: on-failure
+
+  prometheus:
+    user: root
+    image: prom/prometheus:v2.2.1
+    command:
+      - --log.level=error
+      - --storage.tsdb.path=/data/prometheus
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/pd.rules.yml:/etc/prometheus/pd.rules.yml:ro
+      - ./config/tikv.rules.yml:/etc/prometheus/tikv.rules.yml:ro
+      - ./config/tidb.rules.yml:/etc/prometheus/tidb.rules.yml:ro
+      - ./data:/data
+    restart: on-failure
+  grafana:
+    image: grafana/grafana:5.3.0
+    user: "0"
+    environment:
+      GF_LOG_LEVEL: error
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./config/dashboards:/tmp/dashboards
+      - ./data/grafana:/var/lib/grafana
+    restart: on-failure
