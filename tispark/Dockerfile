@@ -1,10 +1,10 @@
 FROM anapsix/alpine-java:8
 
-ENV SPARK_VERSION=2.3.2 \
+ENV SPARK_VERSION=2.3.3 \
     HADOOP_VERSION=2.7 \
-    TISPARK_VERSION=2.0-SNAPSHOT \
+    TISPARK_VERSION=2.2.0-SNAPSHOT \
     TISPARK_R_VERSION=1.1 \
-    TISPARK_PYTHON_VERSION=1.0.1 \
+    TISPARK_PYTHON_VERSION=2.0 \
     SPARK_HOME=/opt/spark \
     SPARK_NO_DAEMONIZE=true \
     SPARK_MASTER_PORT=7077 \
@@ -39,6 +39,8 @@ RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-$
     && wget -q http://download.pingcap.org/tispark-sample-data.tar.gz \
     && tar zxf tispark-sample-data.tar.gz -C ${SPARK_HOME}/data/ \
     && rm -rf /opt/core/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-latest-linux-amd64.tar.gz tispark-sample-data.tar.gz
+
+ADD conf/log4j.properties /opt/spark/conf/log4j.properties
 
 ENV PYTHONPATH=${SPARK_HOME}/python/lib/py4j-0.10.4-src.zip:${SPARK_HOME}/python:$PYTHONPATH
 
