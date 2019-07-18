@@ -35,7 +35,7 @@ RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-$
     && cp /opt/tispark-tests/tests/session.py ${SPARK_HOME}/python/pyspark/sql/ \
 	&& wget -q http://download.pingcap.org/tispark-latest-linux-amd64.tar.gz \
 	&& tar zxf ./tispark-latest-linux-amd64.tar.gz -C /opt/ \
-	&& cp /opt/core/target/tispark-core-${TISPARK_VERSION}-jar-with-dependencies.jar ${SPARK_HOME}/jars \
+	&& cp /opt/core/target/tispark-assembly-${TISPARK_VERSION}.jar ${SPARK_HOME}/jars \
     && wget -q http://download.pingcap.org/tispark-sample-data.tar.gz \
     && tar zxf tispark-sample-data.tar.gz -C ${SPARK_HOME}/data/ \
     && rm -rf /opt/core/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-latest-linux-amd64.tar.gz tispark-sample-data.tar.gz
