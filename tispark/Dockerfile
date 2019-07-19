@@ -33,12 +33,12 @@ RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-$
     && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
 	&& ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME} \
     && cp /opt/tispark-tests/tests/session.py ${SPARK_HOME}/python/pyspark/sql/ \
-	&& wget -q http://download.pingcap.org/tispark-latest-linux-amd64.tar.gz \
-	&& tar zxf ./tispark-latest-linux-amd64.tar.gz -C /opt/ \
-	&& cp /opt/core/target/tispark-assembly-${TISPARK_VERSION}.jar ${SPARK_HOME}/jars \
+	&& wget -q http://download.pingcap.org/tispark-assembly-latest-linux-amd64.tar.gz \
+	&& tar zxf ./tispark-assembly-latest-linux-amd64.tar.gz -C /opt/ \
+	&& cp /opt/assembly/target/tispark-assembly-${TISPARK_VERSION}.jar ${SPARK_HOME}/jars \
     && wget -q http://download.pingcap.org/tispark-sample-data.tar.gz \
     && tar zxf tispark-sample-data.tar.gz -C ${SPARK_HOME}/data/ \
-    && rm -rf /opt/core/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-latest-linux-amd64.tar.gz tispark-sample-data.tar.gz
+    && rm -rf /opt/assembly/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-latest-linux-amd64.tar.gz tispark-sample-data.tar.gz
 
 ADD conf/log4j.properties /opt/spark/conf/log4j.properties
 
