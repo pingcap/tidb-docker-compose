@@ -12,7 +12,6 @@ ENV SPARK_MAJOR_VERSION=2.3 \
     SPARK_MASTER_HOST=0.0.0.0 \
     SPARK_MASTER_WEBUI_PORT=8080
 
-ADD R /TiSparkR
 ADD tispark-tests /opt/tispark-tests
 
 # base image only contains busybox version nohup and ps
@@ -25,10 +24,7 @@ RUN apk --no-cache add \
         python \
         py-pip \
         R \
-    && pip install --no-cache-dir pytispark==${TISPARK_PYTHON_VERSION} \
-    && R CMD build TiSparkR \
-    && R CMD INSTALL TiSparkR_${TISPARK_R_VERSION}.tar.gz \
-    && rm -rf /TiSparkR_${TISPARK_R_VERSION}.tar.gz /TiSparkR
+    && pip install --no-cache-dir pytispark==${TISPARK_PYTHON_VERSION}
 
 RUN wget -q https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
     && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
