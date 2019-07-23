@@ -101,7 +101,8 @@ services:
     restart: on-failure
   {{ end }}
 
-  {{- if and .Values.tidb .Values.tidb.enableBinlog }}
+  {{- if .Values.tidb }}
+  {{- if .Values.tidb.enableBinlog }}
   {{- range until $pumpSize }}
   pump{{ . }}:
     {{- if $.Values.pump.image }}
@@ -229,6 +230,7 @@ services:
       - "zoo{{ . }}"
       {{- end }}
     restart: on-failure
+  {{- end }}
   {{- end }}
   {{- end }}
   {{ end }}
