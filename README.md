@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/pingcap/tidb-docker-compose.svg?branch=master)](https://travis-ci.org/pingcap/tidb-docker-compose)
 
+**WARNING: This is for testing only, DO NOT USE IN PRODUCTION!**
+
 ## Requirements
 
 * Docker >= 17.03
