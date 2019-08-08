@@ -5,7 +5,6 @@
 {{- $tikvPort := .Values.tikv.port | int -}}
 {{- $pumpSize := .Values.pump.size | int }}
 {{- $pumpPort := .Values.pump.port | int }}
-{{- $drainerPort := .Values.drainer.port | int }}
 {{- $zooSize := .Values.zookeeper.size | int }}
 {{- $zooPort := .Values.zookeeper.port | int }}
 {{- $kafkaSize := .Values.kafka.size | int }}
