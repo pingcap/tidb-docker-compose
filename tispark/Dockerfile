@@ -2,6 +2,7 @@ FROM anapsix/alpine-java:8
 
 ENV SPARK_VERSION=2.4.3 \
     HADOOP_VERSION=2.7 \
+    TISPARK_VERSION=2.2.0 \
     TISPARK_PYTHON_VERSION=2.0 \
     SPARK_HOME=/opt/spark \
     SPARK_NO_DAEMONIZE=true \
@@ -25,12 +26,11 @@ RUN apk --no-cache add \
 RUN wget -q https://download.pingcap.org/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
     && tar zxf spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz -C /opt/ \
     && ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME} \
-    && wget -q http://download.pingcap.org/tispark-assembly-latest-linux-amd64.tar.gz \
-    && tar zxf ./tispark-assembly-latest-linux-amd64.tar.gz -C /opt/ \
-    && cp /opt/assembly/target/tispark-assembly-*.jar ${SPARK_HOME}/jars \
+    && wget -q "https://github.com/pingcap/tispark/releases/download/v${TISPARK_VERSION}/tispark-assembly-${TISPARK_VERSION}.jar" \
+    && cp tispark-assembly-${TISPARK_VERSION}.jar ${SPARK_HOME}/jars \
     && wget -q http://download.pingcap.org/tispark-sample-data.tar.gz \
     && tar zxf tispark-sample-data.tar.gz -C ${SPARK_HOME}/data/ \
-    && rm -rf /opt/assembly/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-latest-linux-amd64.tar.gz tispark-sample-data.tar.gz
+    && rm -rf /opt/assembly/ spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz tispark-sample-data.tar.gz
 
 ADD spark-${SPARK_VERSION}/session.py ${SPARK_HOME}/python/pyspark/sql/
 ADD conf/log4j.properties /opt/spark/conf/log4j.properties
