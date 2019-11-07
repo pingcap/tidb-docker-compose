@@ -24,7 +24,6 @@ services:
       - --data-dir=/data/pd0
       - --config=/pd.toml
       - --log-file=/logs/pd0.log
-      - --log-level=info
   pd1:
     image: pingcap/pd:latest
     ports:
