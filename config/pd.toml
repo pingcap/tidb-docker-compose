@@ -19,11 +19,11 @@ tso-save-interval = "3s"
 
 [security]
 # Path of file that contains list of trusted SSL CAs. if set, following four settings shouldn't be empty
-cacert-path = ""
+cacert-path = "/cert/ca.pem"
 # Path of file that contains X509 certificate in PEM format.
-cert-path = ""
+cert-path = "/cert/pd-server.pem"
 # Path of file that contains X509 key in PEM format.
-key-path = ""
+key-path = "/cert/pd-server-key.pem"
 
 [log]
 level = "error"
