@@ -484,9 +484,9 @@ max-open-files = 1024
 
 [security]
 # set the path for certificates. Empty string means disabling secure connectoins.
-# ca-path = ""
-# cert-path = ""
-# key-path = ""
+ca-path = "/cert/ca.pem"
+cert-path = "/cert/tikv-server.pem"
+key-path = "/cert/tikv-server-key.pem"
 
 [import]
 # the directory to store importing kv data.

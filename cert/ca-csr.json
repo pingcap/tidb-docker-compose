@@ -1,0 +1,15 @@
+{
+    "CN": "My own CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "CN",
+            "L": "Beijing",
+            "O": "test12344",
+            "ST": "test"
+        }
+    ]
+}

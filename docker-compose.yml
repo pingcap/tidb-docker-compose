@@ -9,6 +9,7 @@ services:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --name=pd0
       - --client-urls=http://0.0.0.0:2379
@@ -28,6 +29,7 @@ services:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --name=pd1
       - --client-urls=http://0.0.0.0:2379
@@ -47,6 +49,7 @@ services:
       - ./config/pd.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --name=pd2
       - --client-urls=http://0.0.0.0:2379
@@ -64,6 +67,7 @@ services:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv0:20160
@@ -82,6 +86,7 @@ services:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv1:20160
@@ -100,6 +105,7 @@ services:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --addr=0.0.0.0:20160
       - --advertise-addr=tikv2:20160
@@ -121,6 +127,7 @@ services:
     volumes:
       - ./config/tidb.toml:/tidb.toml:ro
       - ./logs:/logs
+      - ./cert:/cert
     command:
       - --store=tikv
       - --path=pd0:2379,pd1:2379,pd2:2379
@@ -130,80 +137,4 @@ services:
       - "tikv0"
       - "tikv1"
       - "tikv2"
-    restart: on-failure
-  tispark-master:
-    image: pingcap/tispark:latest
-    command:
-      - /opt/spark/sbin/start-master.sh
-    volumes:
-      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-    environment:
-      SPARK_MASTER_PORT: 7077
-      SPARK_MASTER_WEBUI_PORT: 8080
-    ports:
-      - "7077:7077"
-      - "8080:8080"
-    depends_on:
-      - "tikv0"
-      - "tikv1"
-      - "tikv2"
-    restart: on-failure
-  tispark-slave0:
-    image: pingcap/tispark:latest
-    command:
-      - /opt/spark/sbin/start-slave.sh
-      - spark://tispark-master:7077
-    volumes:
-      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
-    environment:
-      SPARK_WORKER_WEBUI_PORT: 38081
-    ports:
-      - "38081:38081"
-    depends_on:
-      - tispark-master
-    restart: on-failure
-
-  tidb-vision:
-    image: pingcap/tidb-vision:latest
-    environment:
-      PD_ENDPOINT: pd0:2379
-    ports:
-      - "8010:8010"
-    restart: on-failure
-
-  # monitors
-  pushgateway:
-    image: prom/pushgateway:v0.3.1
-    command:
-      - --log.level=error
-    restart: on-failure
-  prometheus:
-    user: root
-    image: prom/prometheus:v2.2.1
-    command:
-      - --log.level=error
-      - --storage.tsdb.path=/data/prometheus
-      - --config.file=/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./config/pd.rules.yml:/etc/prometheus/pd.rules.yml:ro
-      - ./config/tikv.rules.yml:/etc/prometheus/tikv.rules.yml:ro
-      - ./config/tidb.rules.yml:/etc/prometheus/tidb.rules.yml:ro
-      - ./data:/data
-    restart: on-failure
-  grafana:
-    image: grafana/grafana:6.0.1
-    user: "0"
-    environment:
-      GF_LOG_LEVEL: error
-      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
-    volumes:
-      - ./config/grafana:/etc/grafana
-      - ./config/dashboards:/tmp/dashboards
-      - ./data/grafana:/var/lib/grafana
-    ports:
-      - "3000:3000"
     restart: on-failure
