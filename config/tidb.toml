@@ -82,22 +82,22 @@ log-rotate = true
 
 [security]
 # Path of file that contains list of trusted SSL CAs for connection with mysql client.
-ssl-ca = "/cert/ca.pem"
+ssl-ca = ""
 
 # Path of file that contains X509 certificate in PEM format for connection with mysql client.
-ssl-cert = "/cert/tidb-server.pem"
+ssl-cert = ""
 
 # Path of file that contains X509 key in PEM format for connection with mysql client.
-ssl-key = "/cert/tidb-server-key.pem"
+ssl-key = ""
 
 # Path of file that contains list of trusted SSL CAs for connection with cluster components.
-cluster-ssl-ca = ""
+cluster-ssl-ca = "/cert/ca.pem"
 
 # Path of file that contains X509 certificate in PEM format for connection with cluster components.
-cluster-ssl-cert = ""
+cluster-ssl-cert = "/cert/tidb-server.pem"
 
 # Path of file that contains X509 key in PEM format for connection with cluster components.
-cluster-ssl-key = ""
+cluster-ssl-key = "/cert/tidb-server-key.pem"
 
 [status]
 # If enable status report HTTP service.
