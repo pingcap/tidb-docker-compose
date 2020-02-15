@@ -12,11 +12,11 @@ services:
       - ./cert:/cert
     command:
       - --name=pd0
-      - --client-urls=http://0.0.0.0:2379
-      - --peer-urls=http://0.0.0.0:2380
-      - --advertise-client-urls=http://pd0:2379
-      - --advertise-peer-urls=http://pd0:2380
-      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --client-urls=https://0.0.0.0:2379
+      - --peer-urls=https://0.0.0.0:2380
+      - --advertise-client-urls=https://pd0:2379
+      - --advertise-peer-urls=https://pd0:2380
+      - --initial-cluster=pd0=https://pd0:2380,pd1=https://pd1:2380,pd2=https://pd2:2380
       - --data-dir=/data/pd0
       - --config=/pd.toml
       - --log-file=/logs/pd0.log
@@ -32,11 +32,11 @@ services:
       - ./cert:/cert
     command:
       - --name=pd1
-      - --client-urls=http://0.0.0.0:2379
-      - --peer-urls=http://0.0.0.0:2380
-      - --advertise-client-urls=http://pd1:2379
-      - --advertise-peer-urls=http://pd1:2380
-      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --client-urls=https://0.0.0.0:2379
+      - --peer-urls=https://0.0.0.0:2380
+      - --advertise-client-urls=https://pd1:2379
+      - --advertise-peer-urls=https://pd1:2380
+      - --initial-cluster=pd0=https://pd0:2380,pd1=https://pd1:2380,pd2=https://pd2:2380
       - --data-dir=/data/pd1
       - --config=/pd.toml
       - --log-file=/logs/pd1.log
@@ -52,11 +52,11 @@ services:
       - ./cert:/cert
     command:
       - --name=pd2
-      - --client-urls=http://0.0.0.0:2379
-      - --peer-urls=http://0.0.0.0:2380
-      - --advertise-client-urls=http://pd2:2379
-      - --advertise-peer-urls=http://pd2:2380
-      - --initial-cluster=pd0=http://pd0:2380,pd1=http://pd1:2380,pd2=http://pd2:2380
+      - --client-urls=https://0.0.0.0:2379
+      - --peer-urls=https://0.0.0.0:2380
+      - --advertise-client-urls=https://pd2:2379
+      - --advertise-peer-urls=https://pd2:2380
+      - --initial-cluster=pd0=https://pd0:2380,pd1=https://pd1:2380,pd2=https://pd2:2380
       - --data-dir=/data/pd2
       - --config=/pd.toml
       - --log-file=/logs/pd2.log
