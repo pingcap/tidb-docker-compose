@@ -11,5 +11,8 @@
             "O": "Pingcap",
             "ST": "Beijing"
         }
-    ]
+    ],
+    "ca":{
+      "expiry": "6m"
+    }
 }
