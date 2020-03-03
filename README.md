@@ -33,6 +33,7 @@ You can also use Docker Swarm to deploy a TiDB Platform cluster, and then you ca
 
 ```bash
 $ docker swarm init # if your docker daemon is not already part of a swarm
+$ mkdir data logs
 $ docker stack deploy tidb -c docker-swarm.yml
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
