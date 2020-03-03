@@ -354,6 +354,7 @@ services:
       - --path=pd0:2379,pd1:2379,pd2:2379
       - --config=/tidb.toml
       - --log-file=/logs/tidb.log
+      - --advertise-address=tidb
       - --enable-binlog=true
     depends_on:
       - "tikv0"
