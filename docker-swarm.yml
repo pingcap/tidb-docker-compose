@@ -71,7 +71,7 @@ services:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
       - ./logs:/logs
-    entrypoint: [ "/bin/sh", "-c", "/tikv-server --advertise-addr=$$HOSTNAME:20160  --addr=0.0.0.0:20160 --data-dir=/data/tikv$$TASK_SLOT --pd=pd0:2379,pd1:2379,pd2:2379 --config=/tikv.toml --log-file=/logs/tikv$$TASK_SLOT.log --log-level=info" ]
+    entrypoint: [ "/bin/sh", "-c", "/tikv-server --advertise-addr=$$HOSTNAME:20160 --addr=0.0.0.0:20160 --data-dir=/data/tikv$$TASK_SLOT --pd=pd0:2379,pd1:2379,pd2:2379 --config=/tikv.toml --log-file=/logs/tikv$$TASK_SLOT.log --log-level=info" ]
     depends_on:
       - "pd0"
       - "pd1"
@@ -93,7 +93,7 @@ services:
     volumes:
       - ./config/tidb.toml:/tidb.toml:ro
       - ./logs:/logs
-    entrypoint: [ "/bin/sh", "-c", "/tidb-server --store=tikv --path=pd0:2379,pd1:2379,pd2:2379 --config=/tidb.toml --log-file=/logs/tidb$$TASK_SLOT.log -L info" ]
+    entrypoint: [ "/bin/sh", "-c", "/tidb-server --advertise-address=$$HOSTNAME --store=tikv --path=pd0:2379,pd1:2379,pd2:2379 --config=/tidb.toml --log-file=/logs/tidb$$TASK_SLOT.log -L info" ]
     depends_on:
       - "tikv"
     deploy:

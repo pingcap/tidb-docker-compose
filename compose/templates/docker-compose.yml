@@ -259,6 +259,7 @@ services:
       - --path={{- template "pd_list" $ }}
       - --config=/tidb.toml
       - --log-file=/logs/tidb.log
+      - --advertise-address=tidb
       {{- if .Values.tidb.enableBinlog }}
       - --enable-binlog=true
       {{- end }}
