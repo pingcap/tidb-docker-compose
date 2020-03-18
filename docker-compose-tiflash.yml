@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   pd0:
-    image: pingcap/pd:latest
+    image: pingcap/pd:nightly
     ports:
       - "2379"
     volumes:
@@ -21,7 +21,7 @@ services:
       - --log-file=/logs/pd0.log
     restart: on-failure
   pd1:
-    image: pingcap/pd:latest
+    image: pingcap/pd:nightly
     ports:
       - "2379"
     volumes:
@@ -40,7 +40,7 @@ services:
       - --log-file=/logs/pd1.log
     restart: on-failure
   pd2:
-    image: pingcap/pd:latest
+    image: pingcap/pd:nightly
     ports:
       - "2379"
     volumes:
@@ -59,7 +59,7 @@ services:
       - --log-file=/logs/pd2.log
     restart: on-failure
   tikv0:
-    image: pingcap/tikv:latest
+    image: pingcap/tikv:nightly
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -77,7 +77,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv1:
-    image: pingcap/tikv:latest
+    image: pingcap/tikv:nightly
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -95,7 +95,7 @@ services:
       - "pd2"
     restart: on-failure
   tikv2:
-    image: pingcap/tikv:latest
+    image: pingcap/tikv:nightly
     volumes:
       - ./config/tikv.toml:/tikv.toml:ro
       - ./data:/data
@@ -113,7 +113,7 @@ services:
       - "pd2"
     restart: on-failure
   tidb:
-    image: pingcap/tidb:latest
+    image: pingcap/tidb:nightly
     ports:
       - "4000:4000"
       - "10080:10080"
@@ -131,7 +131,7 @@ services:
       - "tikv2"
     restart: on-failure
   tiflash:
-    image: pingcap/tiflash:latest
+    image: pingcap/tiflash:nightly
     volumes:
       - ./config/tiflash.toml:/tiflash.toml:ro
       - ./config/tiflash-learner.toml:/tiflash-learner.toml:ro

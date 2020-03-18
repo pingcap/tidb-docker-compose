@@ -9,7 +9,7 @@ http_port = 8223
 
 [flash]
 tidb_status_addr = "tidb:10080"
-service_addr = "0.0.0.0:4030"
+service_addr = "tiflash:4030"
 
 [flash.flash_cluster]
 cluster_manager_path = "/tiflash/flash_cluster_manager"
