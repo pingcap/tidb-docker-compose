@@ -6,7 +6,7 @@ services:
     ports:
       - "2379"
     volumes:
-      - ./config/pd.toml:/pd.toml:ro
+      - ./config/pd-nightly.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
     command:
@@ -25,7 +25,7 @@ services:
     ports:
       - "2379"
     volumes:
-      - ./config/pd.toml:/pd.toml:ro
+      - ./config/pd-nightly.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
     command:
@@ -44,7 +44,7 @@ services:
     ports:
       - "2379"
     volumes:
-      - ./config/pd.toml:/pd.toml:ro
+      - ./config/pd-nightly.toml:/pd.toml:ro
       - ./data:/data
       - ./logs:/logs
     command:
@@ -131,20 +131,20 @@ services:
       - "tikv2"
     restart: on-failure
   tiflash:
-    image: pingcap/tiflash:nightly
-    volumes:
-      - ./config/tiflash.toml:/tiflash.toml:ro
-      - ./config/tiflash-learner.toml:/tiflash-learner.toml:ro
-      - ./data:/data
-      - ./logs:/logs
-    command:
-      - --config=/tiflash.toml
-    depends_on:
-      - "tikv0"
-      - "tikv1"
-      - "tikv2"
-      - "tidb"
-    restart: on-failure
+   image: pingcap/tiflash:nightly
+   volumes:
+     - ./config/tiflash.toml:/tiflash.toml:ro
+     - ./config/tiflash-learner.toml:/tiflash-learner.toml:ro
+     - ./data:/data
+     - ./logs:/logs
+   command:
+     - --config=/tiflash.toml
+   depends_on:
+     - "tikv0"
+     - "tikv1"
+     - "tikv2"
+     - "tidb"
+   restart: on-failure
   # monitors
   pushgateway:
     image: prom/pushgateway:v0.3.1
@@ -159,7 +159,7 @@ services:
       - --storage.tsdb.path=/data/prometheus
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "9091:9091"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/pd.rules.yml:/etc/prometheus/pd.rules.yml:ro
