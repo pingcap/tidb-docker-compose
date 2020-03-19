@@ -50,9 +50,9 @@ level = "info"
 
 [metric]
 # prometheus client push interval, set "0s" to disable prometheus.
-interval = "15s"
+#interval = "15s"
 # prometheus pushgateway address, leaves it empty will disable prometheus.
-address = "pushgateway:9091"
+#address = "pushgateway:9091"
 
 [pd-server]
 ## the metric storage is the cluster metric storage. This is use for query metric data.
@@ -74,7 +74,7 @@ merge-schedule-limit = 8
 hot-region-schedule-limit = 4
 ## There are some policies supported: ["count", "size"], default: "count"
 # leader-schedule-policy = "count"
-## When the score difference between the leader or Region of the two stores is 
+## When the score difference between the leader or Region of the two stores is
 ## less than specified multiple times of the Region size, it is considered in balance by PD.
 ## If it equals 0.0, PD will automatically adjust it.
 # tolerant-size-ratio = 0.0
@@ -94,7 +94,7 @@ hot-region-schedule-limit = 4
 
 [replication]
 ## The number of replicas for each region.
-max-replicas = 3
+max-replicas = 1
 ## The label keys specified the location of a store.
 ## The placement priorities is implied by the order of label keys.
 ## For example, ["zone", "rack"] means that we should place replicas to

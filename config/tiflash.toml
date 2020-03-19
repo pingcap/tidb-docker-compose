@@ -35,7 +35,7 @@ size = "1000M"
 runAsDaemon = true
 
 [raft]
-pd_addr = "pd0:2379,pd1:2379,pd2:2379"
+pd_addr = "pd0:2379"
 storage_engine = "tmt"
 
 [quotas]
