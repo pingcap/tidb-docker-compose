@@ -7,7 +7,7 @@ log-file = "/logs/tiflash_tikv.log"
 [readpool.storage]
 
 [server]
-engine-addr = "0.0.0.0:4030"
+engine-addr = "tiflash:4030"
 addr = "0.0.0.0:20280"
 advertise-addr = "tiflash:20280"
 #status-addr = "tiflash:20292"
