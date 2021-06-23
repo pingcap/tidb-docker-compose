@@ -1,8 +1,17 @@
 # TiDB docker-compose
 
-[![Build Status](https://travis-ci.org/pingcap/tidb-docker-compose.svg?branch=master)](https://travis-ci.org/pingcap/tidb-docker-compose)
+## :warning: End of project :warning:
 
-**WARNING: This is for testing only, DO NOT USE IN PRODUCTION!**
+[![development](https://img.shields.io/badge/development-halted-red.svg)](https://github.com/pingcap/tidb-docker-compose/issues/95)
+
+**TiDB docker-compose is superseded by [TiUP](https://tiup.io/), a powerful tool to manage a TiDB cluster.**
+
+And this project [has ended](https://github.com/pingcap/tidb-docker-compose/issues/95). All development/maintenance activities have halted.
+
+As it is free software, people are free and welcome to fork and develop the codebase on their own.
+However, to avoid any confusion, the original repository is archived and we recommend any further fork/development to proceed with an explicit rename and rebranding first.
+
+We encourage all interested parties to mirror any relevant bits as we can't actively guarantee their existence in the future.
 
 ## Requirements
 
