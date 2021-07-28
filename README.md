@@ -218,7 +218,7 @@ $ gdb /tikv-server 1 -batch -ex "thread apply all bt" -ex "info threads"
 TiDB uses ports: 4000(mysql) and 10080(status) by default
 
 ```bash
-$ mysql -h 127.0.0.1 -P 4000 -u root
+$ mysql -h 127.0.0.1 -P 4000 -u root --comments
 ```
 
 And Grafana uses port 3000 by default, so open your browser at http://localhost:3000 to view monitor dashboard
@@ -232,7 +232,7 @@ Insert some sample data to the TiDB cluster:
 ```bash
 $ docker-compose exec tispark-master bash
 $ cd /opt/spark/data/tispark-sample-data
-$ mysql --local-infile=1 -h tidb -P 4000 -u root < dss.ddl
+$ mysql --local-infile=1 -h tidb -P 4000 -u root --comments < dss.ddl
 ```
 
 After the sample data is loaded into the TiDB cluster, you can access Spark Shell by `docker-compose exec tispark-master /opt/spark/bin/spark-shell`.
