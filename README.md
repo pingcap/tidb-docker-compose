@@ -17,7 +17,7 @@
 ```bash
 $ git clone https://github.com/pingcap/tidb-docker-compose.git
 $ cd tidb-docker-compose && docker-compose pull # Get the latest Docker images
-$ sudo setenforce 0
+$ sudo setenforce 0 # Only on Linux
 $ docker-compose up -d
 $ mysql -h 127.0.0.1 -P 4000 -u root
 ```
