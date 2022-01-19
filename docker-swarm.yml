@@ -100,7 +100,7 @@ services:
         replicas: 1
 
   tispark-master:
-    image: pingcap/tispark:latest
+    image: pingcap/tispark:v2.1.1
     command:
       - /opt/spark/sbin/start-master.sh
     volumes:
@@ -116,7 +116,7 @@ services:
     deploy:
         replicas: 1
   tispark-slave:
-    image: pingcap/tispark:latest
+    image: pingcap/tispark:v2.1.1
     command:
       - /opt/spark/sbin/start-slave.sh
       - spark://tispark-master:7077
